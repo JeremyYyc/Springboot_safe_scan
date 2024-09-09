@@ -40,7 +40,7 @@ public class LoginInterceptor implements HandlerInterceptor {
 
             //判断两个token是否相同，即在redis缓存中存在一个与此次登录所被验证的token相同的一个令牌
             if (redisToken == null){
-                throw new RuntimeException("请重新登录");
+                throw new RuntimeException("Please login again");
             }
             Map<String, Object> stringObjectMap = JwtUtil.parseToken(token);
             ThreadLocalUtil.set(stringObjectMap);
