@@ -7,7 +7,5 @@ import org.safescan.entity.User;
 public interface UserMapper {
     User findByEmail(String email);
 
-//    @Insert("insert into user(email, password, creat_time, update_time)\n" +
-//            "values(#{email}, #{encryptedPassword}, now(), now());")
     void registerByEmail(String email, String encryptedPassword);
 }

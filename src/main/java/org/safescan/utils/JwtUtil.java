@@ -8,13 +8,13 @@ import java.util.Map;
 
 public class JwtUtil {
 
-    private static final String KEY = "Jeremy";
+    private static final String KEY = "SAFE_SCAN";
 
     public static String generateToken(Map<String, Object> claims){
         return JWT.create()
-                .withClaim("claims", claims)  //添加载荷
-                .withExpiresAt(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 2)) //添加过期时间（2h）
-                .sign(Algorithm.HMAC256(KEY)); //指定算法，配置密钥
+                .withClaim("claims", claims)  // Add claims
+                .withExpiresAt(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 2)) // Expire time（2h）
+                .sign(Algorithm.HMAC256(KEY)); // Set keys and algorithm
     }
 
 

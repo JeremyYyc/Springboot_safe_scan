@@ -1,14 +1,19 @@
 package org.safescan.controller;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Pattern;
 import org.safescan.entity.Result;
 import org.safescan.entity.User;
 import org.safescan.service.UserService;
 import org.safescan.utils.JwtUtil;
 import org.safescan.utils.Md5Util;
+import org.safescan.utils.ThreadLocalUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,6 +24,7 @@ import java.util.concurrent.TimeUnit;
 
 @RestController
 @RequestMapping("/user")
+@Validated
 public class UserController {
     @Autowired
     private UserService userService;
@@ -26,7 +32,9 @@ public class UserController {
     private StringRedisTemplate stringRedisTemplate;
 
     @PostMapping("/register")
-    public Result register(@Validated String email, String password, String rePassword) {
+    public Result register(@Email(message = "{email.invalid}") @NotEmpty(message = "{email.empty}") String email,
+                           @Pattern(regexp = "^\\S{5,16}$", message = "{password.rules}") String password,
+                           @Pattern(regexp = "^\\S{5,16}$", message = "{password.rules}") String rePassword) {
         User registerUser = userService.findByEmail(email);
 
         if (!password.equals(rePassword)) {
@@ -40,11 +48,12 @@ public class UserController {
     }
 
     @PostMapping("login")
-    public Result login(String email, String password) {
+    public Result login(@Email(message = "{email.invalid}") @NotEmpty(message = "{email.empty}") String email,
+                        @Pattern(regexp = "^\\S{5,16}$", message = "{password.rules}") String password) {
         // Check weather current user exists
         User loginUser = userService.findByEmail(email);
         if (loginUser == null){
-            return Result.error("Current user is not exists");
+            return Result.error("Current user is not exists!");
         }
 
         // Check weather the password is correct
@@ -66,6 +75,14 @@ public class UserController {
 
         // The password is not correct
         return Result.error("Incorrect password!");
+    }
+
+    @GetMapping("/info")
+    public Result<User> userInfo(){
+        Map<String,Object> map = ThreadLocalUtil.get();
+        String email = (String) map.get("email");
+        User user = userService.findByEmail(email);
+        return Result.success(user);
     }
 
 
