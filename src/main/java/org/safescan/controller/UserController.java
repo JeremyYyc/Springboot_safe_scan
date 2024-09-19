@@ -13,13 +13,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 @RestController
@@ -80,10 +78,30 @@ public class UserController {
     @GetMapping("/info")
     public Result<User> userInfo(){
         Map<String,Object> map = ThreadLocalUtil.get();
-        String email = (String) map.get("email");
-        User user = userService.findByEmail(email);
+        int userId = (Integer) map.get("userId");
+        User user = userService.findByUserId(userId);
         return Result.success(user);
     }
 
 
+    @PutMapping("/update")
+    public Result update(@RequestBody @Validated User user){
+        // Estimate weather information has been changed
+        Map<String, Object> map = ThreadLocalUtil.get();
+        int userId = (Integer) map.get("userId");
+        User oldUser = userService.findByUserId(userId);
+
+        if (Objects.equals(oldUser.getUsername(), user.getUsername())
+                && Objects.equals(oldUser.getEmail(), user.getEmail())) {
+            return Result.error("Please modify information in the first beginning!");
+        }
+
+        User testEmailUser = userService.findByEmail(user.getEmail());
+        if (testEmailUser != null && testEmailUser.getUserId() != user.getUserId()) {
+            return Result.error("Current email address has been register!");
+        }
+
+        userService.update(user);
+        return Result.success();
+    }
 }
