@@ -15,15 +15,19 @@ public interface ForumMapper {
 
     List<UserForumDTO> getForums(int offset, int size);
 
+    Boolean isLikedByUserId(Integer userId, Integer forumId);
+
     void update(ForumDTO forum);
 
-    void delete(Integer forumId, LocalDateTime updateTime);
+    void deleteByForumId(Integer forumId, LocalDateTime updateTime);
+
+    ForumDTO getLikedForum(Integer forumId, Integer userId);
+
+    String getStateByForumId(Integer forumId);
 
     void addForumLikes(Integer forumId, Integer userId, LocalDateTime createTime);
 
     void deleteForumLikes(Integer forumId, Integer userId);
 
     void updateForumLikes(Integer forumId, LocalDateTime updateTime, String state);
-
-    ForumDTO getLikedForum(Integer forumId, Integer userId);
 }

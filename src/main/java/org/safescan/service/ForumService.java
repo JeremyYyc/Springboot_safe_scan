@@ -10,7 +10,7 @@ public interface ForumService {
 
     ForumDTO getByForumId(Integer forumId);
 
-    List<UserForumDTO> getForums(int page, int size);
+    List<UserForumDTO> getForums(int page, int size, Integer userId);
 
     void update(ForumDTO forum);
 

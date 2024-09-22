@@ -33,11 +33,22 @@ public class ForumController {
         return Result.success(forumDTO);
     }
 
-    @GetMapping("/get")
+    @GetMapping("/public/get")
     public Result<List<UserForumDTO>> getForums(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
-        List<UserForumDTO> forums = forumService.getForums(page, size);
+        List<UserForumDTO> forums = forumService.getForums(page, size, null);
+        return Result.success(forums);
+    }
+
+    @GetMapping("/private/get")
+    public Result<List<UserForumDTO>> getUserForums(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Map<String, Object> map = ThreadLocalUtil.get();
+        Integer userId = (Integer) map.get("userId");
+
+        List<UserForumDTO> forums = forumService.getForums(page, size, userId);
         return Result.success(forums);
     }
 

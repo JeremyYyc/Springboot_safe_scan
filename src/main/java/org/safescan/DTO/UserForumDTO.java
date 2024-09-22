@@ -13,6 +13,7 @@ public class UserForumDTO {
     private String title;
     private String content;
     private Integer forumId;
+    private boolean isLiked;
 
     @NotNull
     private int likeCount;

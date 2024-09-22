@@ -23,17 +23,35 @@
         limit #{offset}, #{size}
     </select>
 
+    <select id="isLikedByUserId" resultType="java.lang.Boolean">
+        select COUNT(1) > 0
+        from forum_likes
+        where forum_id = #{forumId} and user_id = #{userId}
+    </select>
+
     <update id="update" parameterType="org.safescan.DTO.ForumDTO">
         update forums
         set title = #{title}, content = #{content}, update_time = #{updateTime}
         where forum_id = #{forumId}
     </update>
 
-    <update id="delete">
+    <update id="deleteByForumId">
         update forums
         set state = 'Deleted', update_time = #{updateTime}
         where forum_id = #{forumId}
     </update>
+
+    <select id="getLikedForum" resultType="org.safescan.DTO.ForumDTO">
+        select *
+        from forum_likes
+        where forum_id = #{forumId} and user_id = #{userId}
+    </select>
+
+    <select id="getStateByForumId" resultType="java.lang.String">
+        select state
+        from forums
+        where forum_id = #{forumId}
+    </select>
     
     <insert id="addForumLikes">
         insert into forum_likes(forum_id, user_id, create_time)
@@ -49,21 +67,15 @@
         update forums
         <set>
             <choose>
-                <when test="state == 'add'">
+                <when test="state == 'like'">
                     like_count = like_count + 1, update_time = #{updateTime}
                 </when>
 
-                <when test="state == 'delete'">
+                <when test="state == 'unlike'">
                     like_count = like_count - 1, update_time = #{updateTime}
                 </when>
             </choose>
         </set>
         where forum_id = #{forumId}
     </update>
-
-    <select id="getLikedForum" resultType="org.safescan.DTO.ForumDTO">
-        select *
-        from forum_likes
-        where forum_id = #{forumId} and user_id = #{userId}
-    </select>
 </mapper>

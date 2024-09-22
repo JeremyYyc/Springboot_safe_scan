@@ -23,5 +23,4 @@
         select user_id, username, email, password, avatar from users
         where user_id = #{userId};
     </select>
-
 </mapper>

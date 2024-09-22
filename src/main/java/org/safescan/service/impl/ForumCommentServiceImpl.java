@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.Map;
+import java.util.Objects;
 
 @Service
 public class ForumCommentServiceImpl implements ForumCommentService {
@@ -21,18 +22,34 @@ public class ForumCommentServiceImpl implements ForumCommentService {
         Integer userId = (Integer) map.get("userId");
         // Ensure create time and update time are same
         LocalDateTime time = LocalDateTime.now();
+        Integer forumId = forumComment.getForumId();
+        Integer parentCommentId = forumComment.getParentCommentId();
 
-        // Obtain the commentId by parentCommentId if commentId is null
-        if (forumComment.getForumId() == null){
-            Integer forumId = forumCommentMapper.getForumIdByCommentId(forumComment.getParentCommentId());
-            forumComment.setForumId(forumId);
+        // Obtain the commentId by parentCommentId if it is a comment to another comment
+        if (forumId == null && parentCommentId != null){
+            forumId = forumCommentMapper.getForumIdByCommentId(parentCommentId);
+            if (forumId == null) {
+                throw new RuntimeException("Unable to find the post by current comment id!");
+            }
+        }
+
+        // Estimate weather this comment is deleted or not
+        if (Objects.equals(forumCommentMapper.getState(forumId, parentCommentId), "Deleted")){
+            throw new RuntimeException("This "+ (parentCommentId == null ? "post" : "comment" ) +" has been deleted!");
         }
 
         // Store this message information into the database
+        forumComment.setForumId(forumId);
         forumComment.setUserId(userId);
         forumComment.setCreateTime(time);
         forumComment.setUpdateTime(time);
-        forumCommentMapper.addComment(forumComment);
+
+        try {
+            forumCommentMapper.addComment(forumComment);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to add this comment! Possible reason: There is no target post!");
+        }
+
 
         // Update comment information in database table comments and forumComments under different situations
         // Add comment count in forums for both situation
@@ -42,5 +59,54 @@ public class ForumCommentServiceImpl implements ForumCommentService {
             // Add comment count in forum_comment when it is a son comment of a parent comment
             forumCommentMapper.updateForumComments(forumComment.getParentCommentId(), time, "comment");
         }
+    }
+
+    @Override
+    public ForumCommentDTO getByCommentId(Integer commentId) {
+        return forumCommentMapper.getByCommentId(commentId);
+    }
+
+    @Override
+    public void deleteByCommentId(Integer commentId, Integer userId) {
+        try {
+            forumCommentMapper.deleteByForumCommentId(commentId, userId, LocalDateTime.now());
+        } catch (Exception e) {
+            throw new RuntimeException("Unable to find this comment!");
+        }
+    }
+
+    @Override
+    public ForumCommentDTO getLikeComment(Integer commentId) {
+        Map<String, Object> map = ThreadLocalUtil.get();
+        Integer userId = (Integer) map.get("userId");
+        return forumCommentMapper.getLikedComment(commentId, userId);
+    }
+
+    @Override
+    public void likeForum(Integer commentId) {
+        Map<String, Object> map = ThreadLocalUtil.get();
+        Integer userId = (Integer) map.get("userId");
+
+        if (Objects.equals(forumCommentMapper.getStateByCommentId(commentId), "Deleted")) {
+            throw new RuntimeException("This comment has been deleted!");
+        }
+
+        LocalDateTime time = LocalDateTime.now();
+        forumCommentMapper.addForumLikes(commentId, userId, time);
+        forumCommentMapper.updateForumLikes(commentId, time, "like");
+    }
+
+    @Override
+    public void unlikeForum(Integer commentId) {
+        Map<String, Object> map = ThreadLocalUtil.get();
+        Integer userId = (Integer) map.get("userId");
+
+        if (Objects.equals(forumCommentMapper.getStateByCommentId(commentId), "Deleted")) {
+            throw new RuntimeException("This comment has been deleted!");
+        }
+
+        LocalDateTime time = LocalDateTime.now();
+        forumCommentMapper.deleteForumLikes(commentId, userId);
+        forumCommentMapper.updateForumLikes(commentId, time, "unlike");
     }
 }
