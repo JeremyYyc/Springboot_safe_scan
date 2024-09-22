@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.safescan.mapper.ForumMapper">
+    <insert id="add" parameterType="org.safescan.entity.Forum">
+        insert into forums(user_id, title, content, create_time, update_time)
+        values (#{userId}, #{title}, #{content}, #{createTime}, #{updateTime})
+    </insert>
+
+    <select id="getByForumId" resultType="org.safescan.entity.Forum">
+        select user_id, title, content, like_count, comment_count, state, create_time
+        from forums
+        where forum_id = #{forumId}
+    </select>
+
+    <update id="update" parameterType="org.safescan.entity.Forum">
+        update forums
+        set title = #{title}, content = #{content}, update_time = #{updateTime}
+        where forum_id = #{forumId}
+    </update>
+
+    <update id="delete">
+        update forums
+        set state = "Deleted", update_time = #{updateTime}
+        where forum_id = #{forumId}
+    </update>
+</mapper>
