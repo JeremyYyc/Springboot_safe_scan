@@ -4,23 +4,23 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.safescan.mapper.UserMapper">
     <select id="findByEmail" resultType="org.safescan.entity.User">
-        select user_id, username, email, password, avatar from user
+        select user_id, username, email, password, avatar from users
         where email = #{email};
     </select>
 
     <insert id="registerByEmail">
-        insert into user(email, password, create_time, update_time)
+        insert into users(email, password, create_time, update_time)
         values(#{email}, #{encryptedPassword}, now(), now());
     </insert>
 
     <update id="update">
-        update user
+        update users
         set username = #{username}, email = #{email}
         where user_id = #{userId}
     </update>
 
     <select id="findByUserId" resultType="org.safescan.entity.User">
-        select user_id, username, email, password, avatar from user
+        select user_id, username, email, password, avatar from users
         where user_id = #{userId};
     </select>
 
