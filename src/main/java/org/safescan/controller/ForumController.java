@@ -5,7 +5,6 @@ import org.safescan.entity.Result;
 import org.safescan.service.ForumService;
 import org.safescan.utils.ThreadLocalUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,8 +16,6 @@ import java.util.Map;
 public class ForumController {
     @Autowired
     private ForumService forumService;
-    @Autowired
-    private StringRedisTemplate stringRedisTemplate;
 
     @PostMapping("/add")
     public Result add(@RequestBody @Validated Forum forum) {
@@ -61,9 +58,55 @@ public class ForumController {
         return Result.success("Successfully delete the post!", null);
     }
 
-    @PutMapping("/like")
+
+    @PostMapping("/like")
     public Result like(@RequestParam Integer forumId) {
-        forumService.likeForum(forumId);
-        return Result.success();
+        Map<String, Object> map = ThreadLocalUtil.get();
+        Integer userId = (Integer) map.get("userId");
+
+        // To check weather this post has been liked by this user
+        Forum forum = forumService.getLikedForum(forumId, userId);
+
+        if (userId == null) {
+            return Result.error("Please log in to like this post!");
+        } else if (forum != null) {
+            return Result.error("You have already liked this post!");
+        }
+
+        forumService.likeForum(forumId, userId);
+        return Result.success("Successfully liked the post!", null);
+    }
+
+
+    @PostMapping("/unlike")
+    public Result unlike(@RequestParam Integer forumId){
+        Map<String, Object> map = ThreadLocalUtil.get();
+        Integer userId = (Integer) map.get("userId");
+
+        // To check weather this post has been liked by this user
+        Forum forum = forumService.getLikedForum(forumId, userId);
+
+        if (userId == null) {
+            return Result.error("Please log in to unlike this post!");
+        } else if (forum == null) {
+            return Result.error("You have not liked this post yet!");
+        }
+
+        forumService.unlikeForum(forumId, userId);
+        return Result.success("Successfully unliked the post!", null);
+    }
+
+
+    @GetMapping("/hasLiked")
+    public Result hasLiked(@RequestParam Integer forumId) {
+        Map<String, Object> map = ThreadLocalUtil.get();
+        Integer userId = (Integer) map.get("userId");
+
+        Forum forum = forumService.getLikedForum(forumId, userId);
+        if (forum != null) {
+            return Result.success("YES", null);
+        } else {
+            return Result.error("NO");
+        }
     }
 }

@@ -11,7 +11,9 @@ public interface ForumService {
 
     void delete(Integer forumId);
 
-    void likeForum(Integer forumId);
+    void likeForum(Integer forumId, Integer userId);
 
-//    void syncDataToDatabase();
+    void unlikeForum(Integer forumId, Integer userId);
+
+    Forum getLikedForum(Integer forumId, Integer userId);
 }

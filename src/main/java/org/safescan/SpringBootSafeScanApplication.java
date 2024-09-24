@@ -7,6 +7,7 @@ package org.safescan;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 /**
  * Hello world!
@@ -14,7 +15,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  */
 @SpringBootApplication
 public class SpringBootSafeScanApplication {
-    public static void main( String[] args) {
+    public static void main(String[] args) {
         SpringApplication.run(SpringBootSafeScanApplication.class, args);
     }
 }

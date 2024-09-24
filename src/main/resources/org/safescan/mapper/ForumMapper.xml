@@ -22,7 +22,39 @@
 
     <update id="delete">
         update forums
-        set state = "Deleted", update_time = #{updateTime}
+        set state = 'Deleted', update_time = #{updateTime}
         where forum_id = #{forumId}
     </update>
+    
+    <insert id="addForumLikes">
+        insert into forum_likes(forum_id, user_id, create_time)
+        values (#{forumId}, #{userId}, #{createTime})
+    </insert>
+
+    <delete id="deleteForumLikes">
+        delete from forum_likes
+        where forum_id = #{forumId} and user_id = #{userId}
+    </delete>
+
+    <update id="updateForumLikes">
+        update forums
+        <set>
+            <choose>
+                <when test="state == 'add'">
+                    like_count = like_count + 1, update_time = #{updateTime}
+                </when>
+
+                <when test="state == 'delete'">
+                    like_count = like_count - 1, update_time = #{updateTime}
+                </when>
+            </choose>
+        </set>
+        where forum_id = #{forumId}
+    </update>
+
+    <select id="getLikedForum" resultType="org.safescan.entity.Forum">
+        select *
+        from forum_likes
+        where forum_id = #{forumId} and user_id = #{userId}
+    </select>
 </mapper>

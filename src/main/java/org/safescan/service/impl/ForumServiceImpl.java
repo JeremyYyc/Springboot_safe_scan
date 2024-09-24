@@ -5,11 +5,9 @@ import org.safescan.mapper.ForumMapper;
 import org.safescan.service.ForumService;
 import org.safescan.utils.ThreadLocalUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Map;
 
 @Service
@@ -17,11 +15,6 @@ public class ForumServiceImpl implements ForumService {
 
     @Autowired
     private ForumMapper forumMapper;
-    @Autowired
-    private StringRedisTemplate stringRedisTemplate;
-
-    private static final String FORUM_LIKES_KEY = "forum_likes:";
-    private static final String FORUM_COMMENTS_KEY = "forum_comments:";
 
     @Override
     public void add(Forum forum) {
@@ -54,29 +47,23 @@ public class ForumServiceImpl implements ForumService {
     }
 
     @Override
-    public void likeForum(Integer forumId) {
-        String key = FORUM_LIKES_KEY + forumId;
-        stringRedisTemplate.opsForValue().increment(key);
+    public void likeForum(Integer forumId, Integer userId) {
+        LocalDateTime time = LocalDateTime.now();
+        forumMapper.addForumLikes(forumId, userId, time);
+        forumMapper.updateForumLikes(forumId, time, "add");
     }
 
-//    @Override
-//    public void syncDataToDatabase() {
-//        List<Forum> forums = forumMapper.getAllForums();
-//        for (Forum forum : forums) {
-//            String likesKey = FORUM_LIKES_KEY + forum.getForumId();
-//            String commentsKey = FORUM_COMMENTS_KEY + forum.getForumId();
-//
-//            String likesCount = stringRedisTemplate.opsForValue().get(likesKey);
-//            String commentsCount = stringRedisTemplate.opsForValue().get(commentsKey);
-//
-//            if (likesCount != null) {
-//                forum.setLikeCount(Integer.parseInt(likesCount));
-//            }
-//            if (commentsCount != null) {
-//                forum.setCommentCount(Integer.parseInt(commentsCount));
-//            }
-//
-//            forumMapper.updateForumCounts(forum);
-//        }
-//    }
+    @Override
+    public void unlikeForum(Integer forumId, Integer userId) {
+        LocalDateTime time = LocalDateTime.now();
+        forumMapper.deleteForumLikes(forumId, userId);
+        forumMapper.updateForumLikes(forumId, time, "delete");
+    }
+
+    @Override
+    public Forum getLikedForum(Integer forumId, Integer userId) {
+        return forumMapper.getLikedForum(forumId, userId);
+    }
+
+
 }
