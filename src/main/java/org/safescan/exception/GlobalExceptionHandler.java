@@ -1,7 +1,7 @@
 package org.safescan.exception;
 
 
-import org.safescan.entity.Result;
+import org.safescan.DTO.Result;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;

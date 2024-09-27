@@ -1,6 +1,6 @@
 package org.safescan.service.impl;
 
-import org.safescan.entity.User;
+import org.safescan.DTO.UserDTO;
 import org.safescan.mapper.UserMapper;
 import org.safescan.service.UserService;
 import org.safescan.utils.Md5Util;
@@ -15,7 +15,7 @@ public class UserServiceImpl implements UserService {
     private UserMapper userMapper;
 
     @Override
-    public User findByEmail(String email) {
+    public UserDTO findByEmail(String email) {
         return userMapper.findByEmail(email);
     }
 
@@ -29,13 +29,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void update(User user) {
-        user.setUpdateTime(LocalDateTime.now());
-        userMapper.update(user);
+    public void update(UserDTO userDTO) {
+        userDTO.setUpdateTime(LocalDateTime.now());
+        userMapper.update(userDTO);
     }
 
     @Override
-    public User findByUserId(int userId) {
+    public UserDTO findByUserId(int userId) {
         return userMapper.findByUserId(userId);
     }
 }

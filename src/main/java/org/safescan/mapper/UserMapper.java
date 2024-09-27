@@ -1,15 +1,15 @@
 package org.safescan.mapper;
 
 import org.apache.ibatis.annotations.Mapper;
-import org.safescan.entity.User;
+import org.safescan.DTO.UserDTO;
 
 @Mapper
 public interface UserMapper {
-    User findByEmail(String email);
+    UserDTO findByEmail(String email);
 
     void registerByEmail(String email, String encryptedPassword);
 
-    void update(User user);
+    void update(UserDTO userDTO);
 
-    User findByUserId(int userId);
+    UserDTO findByUserId(int userId);
 }

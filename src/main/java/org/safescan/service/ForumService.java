@@ -1,13 +1,18 @@
 package org.safescan.service;
 
-import org.safescan.entity.Forum;
+import org.safescan.DTO.ForumDTO;
+import org.safescan.DTO.UserForumDTO;
+
+import java.util.List;
 
 public interface ForumService {
-    void add(Forum forum);
+    void add(ForumDTO forumDTO);
 
-    Forum getByForumId(Integer forumId);
+    ForumDTO getByForumId(Integer forumId);
 
-    void update(Forum forum);
+    List<UserForumDTO> getForums(int page, int size);
+
+    void update(ForumDTO forumDTO);
 
     void delete(Integer forumId);
 
@@ -15,5 +20,5 @@ public interface ForumService {
 
     void unlikeForum(Integer forumId, Integer userId);
 
-    Forum getLikedForum(Integer forumId, Integer userId);
+    ForumDTO getLikedForum(Integer forumId, Integer userId);
 }

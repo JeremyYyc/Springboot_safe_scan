@@ -1,17 +1,11 @@
 package org.safescan;
 
-/**
- * Hello world!
- *
- */
-
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 /**
- * Hello world!
- *
+ * Start function of the back-end system.
  */
 @SpringBootApplication
 public class SpringBootSafeScanApplication {

@@ -1,4 +1,4 @@
-package org.safescan.entity;
+package org.safescan.DTO;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.NotNull;
@@ -8,11 +8,11 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 @Data
-public class Forum {
+public class ForumDTO {
 
     @NotNull(groups = Update.class)
-    private int forumId;
-    private int userId;
+    private Integer forumId;
+    private Integer userId;
     private String title;
     private String content;
 

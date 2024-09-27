@@ -1,4 +1,4 @@
-package org.safescan.entity;
+package org.safescan.DTO;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

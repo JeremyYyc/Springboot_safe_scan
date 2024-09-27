@@ -18,7 +18,8 @@ public class WebConfig implements WebMvcConfigurer {
         // Give permission to login and register interface
         registry.addInterceptor(loginInterceptor).excludePathPatterns(
                 "/user/login",
-                "/user/register"
+                "/user/register",
+                "/forum/get"
         );
     }
 }

@@ -1,6 +1,7 @@
 package org.safescan.service.impl;
 
-import org.safescan.entity.Forum;
+import org.safescan.DTO.ForumDTO;
+import org.safescan.DTO.UserForumDTO;
 import org.safescan.mapper.ForumMapper;
 import org.safescan.service.ForumService;
 import org.safescan.utils.ThreadLocalUtil;
@@ -8,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -17,27 +19,33 @@ public class ForumServiceImpl implements ForumService {
     private ForumMapper forumMapper;
 
     @Override
-    public void add(Forum forum) {
+    public void add(ForumDTO forumDTO) {
         // Put required elements int the object
-        forum.setCreateTime(LocalDateTime.now());
-        forum.setUpdateTime(LocalDateTime.now());
+        forumDTO.setCreateTime(LocalDateTime.now());
+        forumDTO.setUpdateTime(LocalDateTime.now());
 
         Map<String, Object> map = ThreadLocalUtil.get();
         Integer userId = (Integer) map.get("userId");
-        forum.setUserId(userId);
+        forumDTO.setUserId(userId);
 
-        forumMapper.add(forum);
+        forumMapper.add(forumDTO);
     }
 
     @Override
-    public Forum getByForumId(Integer forumId) {
+    public ForumDTO getByForumId(Integer forumId) {
         return forumMapper.getByForumId(forumId);
     }
 
     @Override
-    public void update(Forum forum) {
-        forum.setUpdateTime(LocalDateTime.now());
-        forumMapper.update(forum);
+    public List<UserForumDTO> getForums(int page, int size) {
+        int offset = page * size; // Calculating the offset
+        return forumMapper.getForums(offset, size);
+    }
+
+    @Override
+    public void update(ForumDTO forumDTO) {
+        forumDTO.setUpdateTime(LocalDateTime.now());
+        forumMapper.update(forumDTO);
     }
 
     @Override
@@ -61,7 +69,7 @@ public class ForumServiceImpl implements ForumService {
     }
 
     @Override
-    public Forum getLikedForum(Integer forumId, Integer userId) {
+    public ForumDTO getLikedForum(Integer forumId, Integer userId) {
         return forumMapper.getLikedForum(forumId, userId);
     }
 

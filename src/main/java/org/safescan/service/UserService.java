@@ -1,13 +1,13 @@
 package org.safescan.service;
 
-import org.safescan.entity.User;
+import org.safescan.DTO.UserDTO;
 
 public interface UserService {
-    User findByEmail(String email);
+    UserDTO findByEmail(String email);
 
     void registerByEmail(String email, String password);
 
-    void update(User user);
+    void update(UserDTO userDTO);
 
-    User findByUserId(int userId);
+    UserDTO findByUserId(int userId);
 }

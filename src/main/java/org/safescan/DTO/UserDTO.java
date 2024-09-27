@@ -1,4 +1,4 @@
-package org.safescan.entity;
+package org.safescan.DTO;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.Email;
@@ -9,10 +9,10 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 @Data
-public class User {
+public class UserDTO {
 
     @NotNull
-    private int userId;
+    private Integer userId;
     private String username;
 
     @Email

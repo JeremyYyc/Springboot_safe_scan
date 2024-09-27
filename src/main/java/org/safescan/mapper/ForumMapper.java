@@ -1,17 +1,21 @@
 package org.safescan.mapper;
 
 import org.apache.ibatis.annotations.Mapper;
-import org.safescan.entity.Forum;
+import org.safescan.DTO.ForumDTO;
+import org.safescan.DTO.UserForumDTO;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Mapper
 public interface ForumMapper {
-    void add(Forum forum);
+    void add(ForumDTO forumDTO);
 
-    Forum getByForumId(int forumId);
+    ForumDTO getByForumId(int forumId);
 
-    void update(Forum forum);
+    List<UserForumDTO> getForums(int offset, int size);
+
+    void update(ForumDTO forumDTO);
 
     void delete(Integer forumId, LocalDateTime updateTime);
 
@@ -21,5 +25,5 @@ public interface ForumMapper {
 
     void updateForumLikes(Integer forumId, LocalDateTime updateTime, String state);
 
-    Forum getLikedForum(Integer forumId, Integer userId);
+    ForumDTO getLikedForum(Integer forumId, Integer userId);
 }

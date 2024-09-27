@@ -4,4 +4,47 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.safescan.mapper.ForumCommentMapper">
 
+    <insert id="addComment" parameterType="org.safescan.DTO.ForumCommentDTO">
+        insert into forum_comments(user_id, forum_id, parent_comment_id, content, create_time, update_time)
+        values(#{userId}, #{forumId}, #{parentCommentId}, #{content}, #{createTime}, #{updateTime})
+    </insert>
+
+    <select id="getForumIdByCommentId" resultType="java.lang.Integer">
+        select forum_id
+        from forum_comments
+        where comment_id = #{parentCommentId}
+    </select>
+
+    <update id="updateForums">
+        update forums
+        <set>
+            <choose>
+                <when test="state == 'comment'">
+                    comment_count = comment_count + 1, update_time = #{updateTime}
+                </when>
+
+                <when test="state == 'delete'">
+                    comment_count = comment_count - 1, update_time = #{updateTime}
+                </when>
+            </choose>
+        </set>
+        where forum_id = #{forumId}
+    </update>
+
+    <update id="updateForumComments">
+        update forum_comments
+        <set>
+            <choose>
+                <when test="state == 'comment'">
+                    comment_count = comment_count + 1, update_time = #{updateTime}
+                </when>
+
+                <when test="state == 'delete'">
+                    comment_count = comment_count - 1, update_time = #{updateTime}
+                </when>
+            </choose>
+        </set>
+        where comment_id = #{parentCommentId}
+    </update>
+
 </mapper>
