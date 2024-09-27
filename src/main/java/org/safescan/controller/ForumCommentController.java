@@ -18,10 +18,10 @@ public class ForumCommentController {
     private ForumCommentService forumCommentService;
 
     @PostMapping
-    public Result addComments(@RequestBody @Validated ForumCommentDTO forumCommentDTO) {
-        forumCommentService.addComment(forumCommentDTO);
+    public Result addComments(@RequestBody @Validated ForumCommentDTO forumComment) {
+        forumCommentService.addComment(forumComment);
         String message = "Successfully comment this " +
-                (forumCommentDTO.getParentCommentId() == null ? "post!" : "comment!");
+                (forumComment.getParentCommentId() == null ? "post!" : "comment!");
         return Result.success(message, null);
     }
 }

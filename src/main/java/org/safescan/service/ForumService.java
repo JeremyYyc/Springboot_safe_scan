@@ -6,13 +6,13 @@ import org.safescan.DTO.UserForumDTO;
 import java.util.List;
 
 public interface ForumService {
-    void add(ForumDTO forumDTO);
+    void add(ForumDTO forum);
 
     ForumDTO getByForumId(Integer forumId);
 
     List<UserForumDTO> getForums(int page, int size);
 
-    void update(ForumDTO forumDTO);
+    void update(ForumDTO forum);
 
     void delete(Integer forumId);
 

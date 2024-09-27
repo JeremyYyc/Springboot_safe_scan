@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 
 @Mapper
 public interface ForumCommentMapper {
-    void addComment(ForumCommentDTO forumCommentDTO);
+    void addComment(ForumCommentDTO forumComment);
 
     Integer getForumIdByCommentId(Integer parentCommentId);
 

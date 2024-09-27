@@ -7,7 +7,7 @@ public interface UserService {
 
     void registerByEmail(String email, String password);
 
-    void update(UserDTO userDTO);
+    void update(UserDTO user);
 
     UserDTO findByUserId(int userId);
 }

@@ -82,11 +82,11 @@ public class ForumController {
         Integer userId = (Integer) map.get("userId");
 
         // To check weather this post has been liked by this user
-        ForumDTO forumDTO = forumService.getLikedForum(forumId, userId);
+        ForumDTO forum = forumService.getLikedForum(forumId, userId);
 
         if (userId == null) {
             return Result.error("Please log in to like this post!");
-        } else if (forumDTO != null) {
+        } else if (forum != null) {
             return Result.error("You have already liked this post!");
         }
 
@@ -101,11 +101,11 @@ public class ForumController {
         Integer userId = (Integer) map.get("userId");
 
         // To check weather this post has been liked by this user
-        ForumDTO forumDTO = forumService.getLikedForum(forumId, userId);
+        ForumDTO forum = forumService.getLikedForum(forumId, userId);
 
         if (userId == null) {
             return Result.error("Please log in to unlike this post!");
-        } else if (forumDTO == null) {
+        } else if (forum == null) {
             return Result.error("You have not liked this post yet!");
         }
 
@@ -119,8 +119,8 @@ public class ForumController {
         Map<String, Object> map = ThreadLocalUtil.get();
         Integer userId = (Integer) map.get("userId");
 
-        ForumDTO forumDTO = forumService.getLikedForum(forumId, userId);
-        if (forumDTO != null) {
+        ForumDTO forum = forumService.getLikedForum(forumId, userId);
+        if (forum != null) {
             return Result.success("YES", null);
         } else {
             return Result.error("NO");

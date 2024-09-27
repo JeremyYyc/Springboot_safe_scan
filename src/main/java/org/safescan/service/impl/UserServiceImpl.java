@@ -29,9 +29,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void update(UserDTO userDTO) {
-        userDTO.setUpdateTime(LocalDateTime.now());
-        userMapper.update(userDTO);
+    public void update(UserDTO user) {
+        user.setUpdateTime(LocalDateTime.now());
+        userMapper.update(user);
     }
 
     @Override

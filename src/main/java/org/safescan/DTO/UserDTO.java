@@ -11,7 +11,6 @@ import java.time.LocalDateTime;
 @Data
 public class UserDTO {
 
-    @NotNull
     private Integer userId;
     private String username;
 

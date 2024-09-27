@@ -9,7 +9,7 @@ public interface UserMapper {
 
     void registerByEmail(String email, String encryptedPassword);
 
-    void update(UserDTO userDTO);
+    void update(UserDTO user);
 
     UserDTO findByUserId(int userId);
 }

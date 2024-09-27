@@ -9,13 +9,13 @@ import java.util.List;
 
 @Mapper
 public interface ForumMapper {
-    void add(ForumDTO forumDTO);
+    void add(ForumDTO forum);
 
     ForumDTO getByForumId(int forumId);
 
     List<UserForumDTO> getForums(int offset, int size);
 
-    void update(ForumDTO forumDTO);
+    void update(ForumDTO forum);
 
     void delete(Integer forumId, LocalDateTime updateTime);
 

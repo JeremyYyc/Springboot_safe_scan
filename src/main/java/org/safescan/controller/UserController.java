@@ -79,8 +79,8 @@ public class UserController {
     public Result<UserDTO> userInfo(){
         Map<String,Object> map = ThreadLocalUtil.get();
         int userId = (Integer) map.get("userId");
-        UserDTO userDTO = userService.findByUserId(userId);
-        return Result.success(userDTO);
+        UserDTO user = userService.findByUserId(userId);
+        return Result.success(user);
     }
 
 
@@ -89,15 +89,15 @@ public class UserController {
         // Estimate weather information has been changed
         Map<String, Object> map = ThreadLocalUtil.get();
         int userId = (Integer) map.get("userId");
-        UserDTO oldUserDTO = userService.findByUserId(userId);
+        UserDTO oldUser = userService.findByUserId(userId);
 
-        if (Objects.equals(oldUserDTO.getUsername(), userDTO.getUsername())
-                && Objects.equals(oldUserDTO.getEmail(), userDTO.getEmail())) {
+        if (Objects.equals(oldUser.getUsername(), userDTO.getUsername())
+                && Objects.equals(oldUser.getEmail(), userDTO.getEmail())) {
             return Result.error("Please modify information in the first beginning!");
         }
 
-        UserDTO testEmailUserDTO = userService.findByEmail(userDTO.getEmail());
-        if (testEmailUserDTO != null && !Objects.equals(testEmailUserDTO.getUserId(), userDTO.getUserId())) {
+        UserDTO testEmailUser = userService.findByEmail(userDTO.getEmail());
+        if (testEmailUser != null && !Objects.equals(testEmailUser.getUserId(), userDTO.getUserId())) {
             return Result.error("Current email address has been register!");
         }
 

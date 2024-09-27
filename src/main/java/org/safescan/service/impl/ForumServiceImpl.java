@@ -19,16 +19,16 @@ public class ForumServiceImpl implements ForumService {
     private ForumMapper forumMapper;
 
     @Override
-    public void add(ForumDTO forumDTO) {
+    public void add(ForumDTO forum) {
         // Put required elements int the object
-        forumDTO.setCreateTime(LocalDateTime.now());
-        forumDTO.setUpdateTime(LocalDateTime.now());
+        forum.setCreateTime(LocalDateTime.now());
+        forum.setUpdateTime(LocalDateTime.now());
 
         Map<String, Object> map = ThreadLocalUtil.get();
         Integer userId = (Integer) map.get("userId");
-        forumDTO.setUserId(userId);
+        forum.setUserId(userId);
 
-        forumMapper.add(forumDTO);
+        forumMapper.add(forum);
     }
 
     @Override
@@ -43,9 +43,9 @@ public class ForumServiceImpl implements ForumService {
     }
 
     @Override
-    public void update(ForumDTO forumDTO) {
-        forumDTO.setUpdateTime(LocalDateTime.now());
-        forumMapper.update(forumDTO);
+    public void update(ForumDTO forum) {
+        forum.setUpdateTime(LocalDateTime.now());
+        forumMapper.update(forum);
     }
 
     @Override
