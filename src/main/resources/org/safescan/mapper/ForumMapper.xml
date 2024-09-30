@@ -15,7 +15,7 @@
     </select>
 
     <select id="getForums" resultType="org.safescan.DTO.UserForumDTO">
-        select u.username, u.avatar, f.forum_id, f.title, f.content, f.like_count, f.comment_count, f.create_time
+        select u.user_id, u.username, u.avatar, f.forum_id, f.title, f.content, f.like_count, f.comment_count, f.create_time
         from forums f
         inner join users u on u.user_id = f.user_id
         where f.state = 'Readable'

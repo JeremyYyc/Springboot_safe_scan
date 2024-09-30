@@ -1,13 +1,15 @@
 package org.safescan.controller;
 
-import org.safescan.DTO.ForumCommentDTO;
 import org.safescan.DTO.Result;
+import org.safescan.DTO.ForumCommentDTO;
+import org.safescan.DTO.UserCommentDTO;
 import org.safescan.service.ForumCommentService;
 import org.safescan.utils.ThreadLocalUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -19,15 +21,16 @@ public class ForumCommentController {
     private ForumCommentService forumCommentService;
 
     @PostMapping("/add")
-    public Result addComments(@RequestBody @Validated ForumCommentDTO forumComment) {
+    public Result<Object> addComments(@RequestBody @Validated ForumCommentDTO forumComment) {
         forumCommentService.addComment(forumComment);
         String message = "Successfully comment this " +
                 (forumComment.getParentCommentId() == null ? "post!" : "comment!");
         return Result.success(message, null);
     }
 
+
     @PutMapping("/delete")
-    public Result delete(Integer commentId) {
+    public Result<Object> delete(Integer commentId) {
         Map<String, Object> map = ThreadLocalUtil.get();
         Integer userId = (Integer) map.get("userId");
 
@@ -41,15 +44,16 @@ public class ForumCommentController {
         }
 
         forumCommentService.deleteByCommentId(commentId, userId);
-        return Result.success("Successfully deleted this comment!");
+        return Result.success("Successfully deleted this comment!", null);
     }
 
+
     @PostMapping("/like")
-    public Result like(@RequestParam Integer commentId) {
+    public Result<Object> like(@RequestParam Integer commentId) {
         // To check weather this post has been liked by this user
         ForumCommentDTO comment = forumCommentService.getLikeComment(commentId);
         if (comment != null) {
-            return Result.error("You have already liked this comment!");
+            return Result.error("You have already liked this comment!", null);
         }
         forumCommentService.likeForum(commentId);
         return Result.success("Successfully liked the comment!", null);
@@ -57,7 +61,7 @@ public class ForumCommentController {
 
 
     @PostMapping("/unlike")
-    public Result unlike(@RequestParam Integer commentId){
+    public Result<Object> unlike(@RequestParam Integer commentId) {
         // To check weather this post has been liked by this user
         ForumCommentDTO comment = forumCommentService.getLikeComment(commentId);
         if (comment == null) {
@@ -66,5 +70,60 @@ public class ForumCommentController {
 
         forumCommentService.unlikeForum(commentId);
         return Result.success("Successfully unliked the comment!", null);
+    }
+
+
+    @GetMapping("/public/get")
+    public Result<List<UserCommentDTO>> getComments(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "4") int size,
+            @RequestParam Integer forumId) {
+        List<UserCommentDTO> comments = forumCommentService.getComments(page, size,
+                null, forumId, null);
+        return Result.success(comments);
+    }
+
+
+    @GetMapping("/private/get")
+    public Result<List<UserCommentDTO>> getCommentsByUser(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "4") int size,
+            @RequestParam Integer forumId) {
+        Map<String, Object> map = ThreadLocalUtil.get();
+        Integer userId = (Integer) map.get("userId");
+
+        List<UserCommentDTO> comments = forumCommentService.getComments(page, size,
+                userId, forumId, null);
+        return Result.success(comments);
+    }
+
+
+    @GetMapping("/public/get/son")
+    public Result<List<UserCommentDTO>> getSonComments(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "4") int size,
+            @RequestParam Integer forumId,
+            @RequestParam Integer ancestorCommentId) {
+        List<UserCommentDTO> comments = forumCommentService.getComments(page, size,
+                null, forumId, ancestorCommentId);
+        return Result.success(comments);
+    }
+
+
+    @GetMapping("private/get/son")
+    public Result<List<UserCommentDTO>> getSonCommentsByUser (
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "4") int size,
+            @RequestParam Integer forumId,
+            @RequestParam Integer ancestorCommentId) {
+        Map<String, Object> map = ThreadLocalUtil.get();
+        Integer userId = (Integer) map.get("userId");
+
+
+
+
+        List<UserCommentDTO> comments = forumCommentService.getComments(page, size,
+                userId, forumId, ancestorCommentId);
+        return Result.success(comments);
     }
 }

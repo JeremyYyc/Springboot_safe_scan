@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 
 @Data
 public class UserForumDTO {
+    private Integer userId;
     private String username;
     private String avatar;
     private String title;

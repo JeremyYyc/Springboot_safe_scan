@@ -30,7 +30,7 @@ public class UserController {
     private StringRedisTemplate stringRedisTemplate;
 
     @PostMapping("/register")
-    public Result register(@Email(message = "{email.invalid}") @NotEmpty(message = "{email.empty}") String email,
+    public Result<Object> register(@Email(message = "{email.invalid}") @NotEmpty(message = "{email.empty}") String email,
                            @Pattern(regexp = "^\\S{5,16}$", message = "{password.rules}") String password,
                            @Pattern(regexp = "^\\S{5,16}$", message = "{password.rules}") String rePassword) {
         UserDTO registerUserDTO = userService.findByEmail(email);
@@ -46,7 +46,7 @@ public class UserController {
     }
 
     @PostMapping("login")
-    public Result login(@Email(message = "{email.invalid}") @NotEmpty(message = "{email.empty}") String email,
+    public Result<String> login(@Email(message = "{email.invalid}") @NotEmpty(message = "{email.empty}") String email,
                         @Pattern(regexp = "^\\S{5,16}$", message = "{password.rules}") String password) {
         // Check weather current user exists
         UserDTO loginUserDTO = userService.findByEmail(email);
@@ -72,7 +72,7 @@ public class UserController {
         }
 
         // The password is not correct
-        return Result.error("Incorrect password!");
+        return Result.error("Incorrect password!", null);
     }
 
     @GetMapping("/info")

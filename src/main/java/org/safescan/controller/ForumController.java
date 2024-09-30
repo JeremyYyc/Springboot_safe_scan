@@ -21,7 +21,7 @@ public class ForumController {
     private ForumService forumService;
 
     @PostMapping("/add")
-    public Result add(@RequestBody @Validated ForumDTO forumDTO) {
+    public Result<Object> add(@RequestBody @Validated ForumDTO forumDTO) {
         forumService.add(forumDTO);
         return Result.success("Successfully posting this post!", null);
     }
@@ -33,6 +33,7 @@ public class ForumController {
         return Result.success(forumDTO);
     }
 
+
     @GetMapping("/public/get")
     public Result<List<UserForumDTO>> getForums(
             @RequestParam(defaultValue = "0") int page,
@@ -41,8 +42,9 @@ public class ForumController {
         return Result.success(forums);
     }
 
+
     @GetMapping("/private/get")
-    public Result<List<UserForumDTO>> getUserForums(
+    public Result<List<UserForumDTO>> getForumsByUser(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
         Map<String, Object> map = ThreadLocalUtil.get();
@@ -54,7 +56,7 @@ public class ForumController {
 
 
     @PutMapping("/update")
-    public Result update(@RequestBody @Validated(ForumDTO.Update.class) ForumDTO forumDTO) {
+    public Result<Object> update(@RequestBody @Validated(ForumDTO.Update.class) ForumDTO forumDTO) {
         Map<String, Object> map = ThreadLocalUtil.get();
         Integer userId = (Integer) map.get("userId");
 
@@ -71,7 +73,7 @@ public class ForumController {
 
 
     @PutMapping("/delete")
-    public Result delete(Integer forumId) {
+    public Result<Object> delete(Integer forumId) {
         Map<String, Object> map = ThreadLocalUtil.get();
         Integer userId = (Integer) map.get("userId");
 
@@ -88,7 +90,7 @@ public class ForumController {
 
 
     @PostMapping("/like")
-    public Result like(@RequestParam Integer forumId) {
+    public Result<Object> like(@RequestParam Integer forumId) {
         Map<String, Object> map = ThreadLocalUtil.get();
         Integer userId = (Integer) map.get("userId");
 
@@ -107,7 +109,7 @@ public class ForumController {
 
 
     @PostMapping("/unlike")
-    public Result unlike(@RequestParam Integer forumId){
+    public Result<Object> unlike(@RequestParam Integer forumId){
         Map<String, Object> map = ThreadLocalUtil.get();
         Integer userId = (Integer) map.get("userId");
 
@@ -126,7 +128,7 @@ public class ForumController {
 
 
     @GetMapping("/hasLiked")
-    public Result hasLiked(@RequestParam Integer forumId) {
+    public Result<Object> hasLiked(@RequestParam Integer forumId) {
         Map<String, Object> map = ThreadLocalUtil.get();
         Integer userId = (Integer) map.get("userId");
 

@@ -42,7 +42,7 @@ public class LoginInterceptor implements HandlerInterceptor {
 
             // Estimate weather these two tokens are equal, which means there is a same token in redis
             if (redisToken == null){
-                throw new RuntimeException("Please login again");
+                throw new RuntimeException("Token is " + token);
             }
 
             // Store token from the request header into a new ThreadLocal

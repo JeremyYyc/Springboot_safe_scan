@@ -2,30 +2,31 @@ package org.safescan.DTO;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.groups.Default;
 import lombok.Data;
 
 import java.time.LocalDateTime;
 
 @Data
-public class ForumCommentDTO {
-
-    @NotNull(groups = Update.class)
+public class UserCommentDTO {
     private Integer commentId;
     private Integer userId;
-    private Integer forumId;
-    private String content;
+    private String username;
+    private String avatar;
+    private Integer ancestorCommentId;
+
+    // If this comment is on another comment, it would have these attributes.
+    // If not, these attributes are null.
+    private Integer parentUserId;
+    private String parentUsername;
+    private String parentAvatar;
+
     @NotNull
     private int likeCount;
     @NotNull
     private int commentCount;
-    private Integer ancestorCommentId;
-    private Integer parentCommentId;
-    private String state;
+    private boolean isLiked;
+
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime updateTime;
 
-    public interface Update extends Default {}
 }

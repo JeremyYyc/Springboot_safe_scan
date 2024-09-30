@@ -16,7 +16,7 @@ public class Result<T> {
         return new Result<>(0, "Successful operation", data);
     }
 
-    public static Result success(){
+    public static <Object> Result<Object> success(){
         return new Result<>(0, "Successful operation",null);
     }
 
@@ -24,8 +24,12 @@ public class Result<T> {
         return new Result<>(0, message, data);
     }
 
-    public static Result error(String message){
+    public static <Object> Result<Object> error(String message){
         return new Result<>(1, message, null);
+    }
+
+    public static <E> Result <E> error(String message, E data) {
+        return new Result<>(1, message, data);
     }
 
 }
