@@ -1,7 +1,7 @@
 package org.safescan.service.impl;
 
 import org.safescan.DTO.ForumDTO;
-import org.safescan.DTO.UserForumDTO;
+import org.safescan.DTO.ResponseForumDTO;
 import org.safescan.mapper.ForumCommentMapper;
 import org.safescan.mapper.ForumMapper;
 import org.safescan.service.ForumService;
@@ -42,11 +42,11 @@ public class ForumServiceImpl implements ForumService {
     }
 
     @Override
-    public List<UserForumDTO> getForums(int page, int size, Integer userId) {
+    public List<ResponseForumDTO> getForums(int page, int size, Integer userId) {
         int offset = page * size; // Calculating the offset
-        List<UserForumDTO> userForums = forumMapper.getForums(offset, size);
+        List<ResponseForumDTO> userForums = forumMapper.getForums(offset, size);
 
-        for (UserForumDTO userForum : userForums) {
+        for (ResponseForumDTO userForum : userForums) {
             // If userId is null, it is public list method
             boolean isLiked = userId != null && forumMapper.isLikedByUserId(userId, userForum.getForumId());
             userForum.setLiked(isLiked);

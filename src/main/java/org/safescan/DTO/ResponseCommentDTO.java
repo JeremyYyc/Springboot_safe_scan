@@ -7,7 +7,7 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 @Data
-public class UserCommentDTO {
+public class ResponseCommentDTO {
     private Integer commentId;
     private Integer userId;
     private String username;

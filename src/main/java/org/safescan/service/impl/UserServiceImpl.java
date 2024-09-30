@@ -38,4 +38,9 @@ public class UserServiceImpl implements UserService {
     public UserDTO findByUserId(int userId) {
         return userMapper.findByUserId(userId);
     }
+
+    @Override
+    public void updateUserAvatar(int userId, String fileUrl) {
+        userMapper.updateUserAvatar(userId, fileUrl);
+    }
 }

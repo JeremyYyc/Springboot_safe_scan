@@ -2,7 +2,7 @@ package org.safescan.mapper;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.safescan.DTO.ForumCommentDTO;
-import org.safescan.DTO.UserCommentDTO;
+import org.safescan.DTO.ResponseCommentDTO;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -11,11 +11,9 @@ import java.util.List;
 public interface ForumCommentMapper {
     void addComment(ForumCommentDTO forumComment);
 
-//    Integer getForumIdByCommentId(Integer parentCommentId);
+    List<ResponseCommentDTO> getParentComments(int offset, int size, Integer forumId);
 
-    List<UserCommentDTO> getParentComments(int offset, int size, Integer forumId);
-
-    List<UserCommentDTO> getSonComments(int offset, int size, Integer ancestorCommentId);
+    List<ResponseCommentDTO> getSonComments(int offset, int size, Integer forumId, Integer ancestorCommentId);
 
     boolean isLikedByUser(Integer userId, Integer commentId);
 

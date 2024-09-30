@@ -8,7 +8,7 @@
         values(#{userId}, #{forumId}, #{ancestorCommentId}, #{parentCommentId}, #{content}, #{createTime}, #{updateTime})
     </insert>
 
-    <select id="getParentComments" resultType="org.safescan.DTO.UserCommentDTO">
+    <select id="getParentComments" resultType="org.safescan.DTO.ResponseCommentDTO">
         select fc.comment_id, u.user_id, u.username, u.avatar,
                fc.ancestor_comment_id, null as parent_user_id, null as parent_username, null as parent_avatar,
                fc.like_count, fc.comment_count, fc.create_time
@@ -20,7 +20,7 @@
         limit #{offset}, #{size}
     </select>
 
-    <select id="getSonComments" resultType="org.safescan.DTO.UserCommentDTO">
+    <select id="getSonComments" resultType="org.safescan.DTO.ResponseCommentDTO">
         select sc.comment_id, su.user_id, su.username, su.avatar,
                sc.ancestor_comment_id , pu.user_id as parent_user_id, pu.username as parent_username, pu.avatar as parent_avatar,
                sc.like_count, sc.comment_count, sc.create_time
@@ -28,7 +28,9 @@
                  join forum_comments pc on sc.parent_comment_id = pc.comment_id
                  join users su on sc.user_id = su.user_id
                  join users pu on pc.user_id = pu.user_id
-        where sc.ancestor_comment_id = #{ancestorCommentId} and sc.state = 'Readable'
+        where sc.ancestor_comment_id = #{ancestorCommentId}
+          and sc.forum_id = #{forumId}
+          and sc.state = 'Readable'
         order by sc.like_count desc, sc.comment_count desc, sc.create_time desc
         limit #{offset}, #{size}
     </select>

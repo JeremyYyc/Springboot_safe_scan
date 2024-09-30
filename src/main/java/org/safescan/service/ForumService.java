@@ -1,7 +1,7 @@
 package org.safescan.service;
 
 import org.safescan.DTO.ForumDTO;
-import org.safescan.DTO.UserForumDTO;
+import org.safescan.DTO.ResponseForumDTO;
 
 import java.util.List;
 
@@ -10,7 +10,7 @@ public interface ForumService {
 
     ForumDTO getByForumId(Integer forumId);
 
-    List<UserForumDTO> getForums(int page, int size, Integer userId);
+    List<ResponseForumDTO> getForums(int page, int size, Integer userId);
 
     void update(ForumDTO forum);
 

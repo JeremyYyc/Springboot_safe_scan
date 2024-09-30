@@ -10,11 +10,19 @@ import org.safescan.utils.JwtUtil;
 import org.safescan.utils.Md5Util;
 import org.safescan.utils.ThreadLocalUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -28,6 +36,8 @@ public class UserController {
     private UserService userService;
     @Autowired
     private StringRedisTemplate stringRedisTemplate;
+    @Value("${app.upload.dir}")
+    private String uploadDir;
 
     @PostMapping("/register")
     public Result<Object> register(@Email(message = "{email.invalid}") @NotEmpty(message = "{email.empty}") String email,
@@ -85,23 +95,64 @@ public class UserController {
 
 
     @PutMapping("/update")
-    public Result update(@RequestBody @Validated UserDTO userDTO){
+    public Result<Object> update(@RequestBody @Validated UserDTO newUser){
         // Estimate weather information has been changed
         Map<String, Object> map = ThreadLocalUtil.get();
         int userId = (Integer) map.get("userId");
         UserDTO oldUser = userService.findByUserId(userId);
+        newUser.setUserId(userId);
 
-        if (Objects.equals(oldUser.getUsername(), userDTO.getUsername())
-                && Objects.equals(oldUser.getEmail(), userDTO.getEmail())) {
+        if (Objects.equals(oldUser.getUsername(), newUser.getUsername())
+                && Objects.equals(oldUser.getEmail(), newUser.getEmail())) {
             return Result.error("Please modify information in the first beginning!");
         }
 
-        UserDTO testEmailUser = userService.findByEmail(userDTO.getEmail());
-        if (testEmailUser != null && !Objects.equals(testEmailUser.getUserId(), userDTO.getUserId())) {
+        UserDTO testEmailUser = userService.findByEmail(newUser.getEmail());
+        if (testEmailUser != null && !Objects.equals(testEmailUser.getUserId(), userId)) {
             return Result.error("Current email address has been register!");
         }
 
-        userService.update(userDTO);
-        return Result.success();
+        userService.update(newUser);
+        return Result.success("Successfully changed username or email", null);
+    }
+
+
+    @PatchMapping("/update/avatar")
+    public Result<Object> updateAvatar(@RequestParam MultipartFile file) {
+        Map<String, Object> map = ThreadLocalUtil.get();
+        int userId = (Integer) map.get("userId");
+
+        if (file.isEmpty()) {
+            return Result.error("This is a empty file!");
+        }
+
+        try {
+            // Make sure the upload directory exists
+            File uploadDirFile = new File(uploadDir);
+            if (!uploadDirFile.exists()) {
+                uploadDirFile.mkdirs();
+            }
+
+            // Generate a unique file name for the file
+            String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
+
+            // Get the file storage path
+            Path filePath = Paths.get(uploadDirFile.getAbsolutePath(), fileName);
+            Files.write(filePath, file.getBytes());
+
+            // Constructing the URL of a file
+            String fileUrl = ServletUriComponentsBuilder.fromCurrentContextPath()
+                    .path("/uploads/")
+                    .path(fileName)
+                    .toUriString();
+
+            // Save the URL of the file to the database
+            userService.updateUserAvatar(userId, fileUrl);
+
+            return Result.success("Avatar uploaded successfully!", fileUrl);
+
+        } catch (IOException e) {
+            return Result.error("Failed to upload avatar: " + e.getMessage());
+        }
     }
 }

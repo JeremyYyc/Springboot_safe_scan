@@ -12,4 +12,6 @@ public interface UserMapper {
     void update(UserDTO user);
 
     UserDTO findByUserId(int userId);
+
+    void updateUserAvatar(int userId, String fileUrl);
 }

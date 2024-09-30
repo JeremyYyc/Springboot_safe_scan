@@ -2,7 +2,7 @@ package org.safescan.mapper;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.safescan.DTO.ForumDTO;
-import org.safescan.DTO.UserForumDTO;
+import org.safescan.DTO.ResponseForumDTO;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -13,7 +13,7 @@ public interface ForumMapper {
 
     ForumDTO getByForumId(int forumId);
 
-    List<UserForumDTO> getForums(int offset, int size);
+    List<ResponseForumDTO> getForums(int offset, int size);
 
     Boolean isLikedByUserId(Integer userId, Integer forumId);
 

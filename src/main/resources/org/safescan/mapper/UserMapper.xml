@@ -4,7 +4,8 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.safescan.mapper.UserMapper">
     <select id="findByEmail" resultType="org.safescan.DTO.UserDTO">
-        select user_id, username, email, password, avatar from users
+        select user_id, username, email, password, avatar
+        from users
         where email = #{email};
     </select>
 
@@ -13,14 +14,21 @@
         values(#{email}, #{encryptedPassword}, now(), now());
     </insert>
 
-    <update id="update">
+    <update id="update" parameterType="org.safescan.DTO.UserDTO">
         update users
-        set username = #{username}, email = #{email}
+        set username = #{username}, email = #{email}, update_time = #{updateTime}
         where user_id = #{userId}
     </update>
 
     <select id="findByUserId" resultType="org.safescan.DTO.UserDTO">
-        select user_id, username, email, password, avatar from users
+        select user_id, username, email, password, avatar
+        from users
         where user_id = #{userId};
     </select>
+
+    <update id="updateUserAvatar">
+        update users
+        set avatar = #{fileUrl}
+        where user_id = #{userId}
+    </update>
 </mapper>

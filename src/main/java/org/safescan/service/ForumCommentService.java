@@ -1,7 +1,7 @@
 package org.safescan.service;
 
 import org.safescan.DTO.ForumCommentDTO;
-import org.safescan.DTO.UserCommentDTO;
+import org.safescan.DTO.ResponseCommentDTO;
 
 import java.util.List;
 
@@ -18,5 +18,5 @@ public interface ForumCommentService {
 
     void unlikeForum(Integer commentId);
 
-    List<UserCommentDTO> getComments(int page, int size, Integer userId, Integer forumId, Integer ancestorCommentId);
+    List<ResponseCommentDTO> getComments(int page, int size, Integer userId, Integer forumId, Integer ancestorCommentId);
 }

@@ -4,6 +4,7 @@ import org.safescan.interceptors.LoginInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
@@ -21,7 +22,15 @@ public class WebConfig implements WebMvcConfigurer {
                 "/user/register",
                 "/forum/public/get",
                 "/comment/public/get",
-                "/comment/public/get/son"
+                "/comment/public/get/son",
+                "/uploads/**"
         );
+    }
+
+
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        registry.addResourceHandler("/uploads/**")
+                .addResourceLocations("file:E:/yyc/safe_scan/Avatars/");
     }
 }

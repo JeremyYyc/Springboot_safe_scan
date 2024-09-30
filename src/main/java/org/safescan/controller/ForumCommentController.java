@@ -2,7 +2,7 @@ package org.safescan.controller;
 
 import org.safescan.DTO.Result;
 import org.safescan.DTO.ForumCommentDTO;
-import org.safescan.DTO.UserCommentDTO;
+import org.safescan.DTO.ResponseCommentDTO;
 import org.safescan.service.ForumCommentService;
 import org.safescan.utils.ThreadLocalUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,44 +74,44 @@ public class ForumCommentController {
 
 
     @GetMapping("/public/get")
-    public Result<List<UserCommentDTO>> getComments(
+    public Result<List<ResponseCommentDTO>> getComments(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "4") int size,
             @RequestParam Integer forumId) {
-        List<UserCommentDTO> comments = forumCommentService.getComments(page, size,
+        List<ResponseCommentDTO> comments = forumCommentService.getComments(page, size,
                 null, forumId, null);
         return Result.success(comments);
     }
 
 
     @GetMapping("/private/get")
-    public Result<List<UserCommentDTO>> getCommentsByUser(
+    public Result<List<ResponseCommentDTO>> getCommentsByUser(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "4") int size,
             @RequestParam Integer forumId) {
         Map<String, Object> map = ThreadLocalUtil.get();
         Integer userId = (Integer) map.get("userId");
 
-        List<UserCommentDTO> comments = forumCommentService.getComments(page, size,
+        List<ResponseCommentDTO> comments = forumCommentService.getComments(page, size,
                 userId, forumId, null);
         return Result.success(comments);
     }
 
 
     @GetMapping("/public/get/son")
-    public Result<List<UserCommentDTO>> getSonComments(
+    public Result<List<ResponseCommentDTO>> getSonComments(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "4") int size,
             @RequestParam Integer forumId,
             @RequestParam Integer ancestorCommentId) {
-        List<UserCommentDTO> comments = forumCommentService.getComments(page, size,
+        List<ResponseCommentDTO> comments = forumCommentService.getComments(page, size,
                 null, forumId, ancestorCommentId);
         return Result.success(comments);
     }
 
 
     @GetMapping("private/get/son")
-    public Result<List<UserCommentDTO>> getSonCommentsByUser (
+    public Result<List<ResponseCommentDTO>> getSonCommentsByUser (
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "4") int size,
             @RequestParam Integer forumId,
@@ -119,10 +119,7 @@ public class ForumCommentController {
         Map<String, Object> map = ThreadLocalUtil.get();
         Integer userId = (Integer) map.get("userId");
 
-
-
-
-        List<UserCommentDTO> comments = forumCommentService.getComments(page, size,
+        List<ResponseCommentDTO> comments = forumCommentService.getComments(page, size,
                 userId, forumId, ancestorCommentId);
         return Result.success(comments);
     }

@@ -1,7 +1,7 @@
 package org.safescan.service.impl;
 
 import org.safescan.DTO.ForumCommentDTO;
-import org.safescan.DTO.UserCommentDTO;
+import org.safescan.DTO.ResponseCommentDTO;
 import org.safescan.mapper.ForumCommentMapper;
 import org.safescan.service.ForumCommentService;
 import org.safescan.utils.ThreadLocalUtil;
@@ -121,24 +121,24 @@ public class ForumCommentServiceImpl implements ForumCommentService {
     }
 
     @Override
-    public List<UserCommentDTO> getComments(
+    public List<ResponseCommentDTO> getComments(
             int page, int size,
             Integer userId, Integer forumId, Integer ancestorCommentId) {
         int offset = page * size; // Calculating the offset
 
-        List<UserCommentDTO> userComments;
+        List<ResponseCommentDTO> comments;
         if (ancestorCommentId == null) {
-            userComments = forumCommentMapper.getParentComments(offset, size, forumId);
+            comments = forumCommentMapper.getParentComments(offset, size, forumId);
         } else {
-            userComments = forumCommentMapper.getSonComments(offset, size, ancestorCommentId);
+            comments = forumCommentMapper.getSonComments(offset, size, forumId, ancestorCommentId);
         }
 
 
-        for (UserCommentDTO userComment: userComments) {
-            boolean isLiked = userId != null && forumCommentMapper.isLikedByUser(userId, userComment.getCommentId());
-            userComment.setLiked(isLiked);
+        for (ResponseCommentDTO comment: comments) {
+            boolean isLiked = userId != null && forumCommentMapper.isLikedByUser(userId, comment.getCommentId());
+            comment.setLiked(isLiked);
         }
 
-        return userComments;
+        return comments;
     }
 }

@@ -2,7 +2,7 @@ package org.safescan.controller;
 
 import org.safescan.DTO.ForumDTO;
 import org.safescan.DTO.Result;
-import org.safescan.DTO.UserForumDTO;
+import org.safescan.DTO.ResponseForumDTO;
 import org.safescan.service.ForumService;
 import org.safescan.utils.ThreadLocalUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,22 +35,22 @@ public class ForumController {
 
 
     @GetMapping("/public/get")
-    public Result<List<UserForumDTO>> getForums(
+    public Result<List<ResponseForumDTO>> getForums(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
-        List<UserForumDTO> forums = forumService.getForums(page, size, null);
+        List<ResponseForumDTO> forums = forumService.getForums(page, size, null);
         return Result.success(forums);
     }
 
 
     @GetMapping("/private/get")
-    public Result<List<UserForumDTO>> getForumsByUser(
+    public Result<List<ResponseForumDTO>> getForumsByUser(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
         Map<String, Object> map = ThreadLocalUtil.get();
         Integer userId = (Integer) map.get("userId");
 
-        List<UserForumDTO> forums = forumService.getForums(page, size, userId);
+        List<ResponseForumDTO> forums = forumService.getForums(page, size, userId);
         return Result.success(forums);
     }
 
@@ -124,19 +124,5 @@ public class ForumController {
 
         forumService.unlikeForum(forumId, userId);
         return Result.success("Successfully unliked the post!", null);
-    }
-
-
-    @GetMapping("/hasLiked")
-    public Result<Object> hasLiked(@RequestParam Integer forumId) {
-        Map<String, Object> map = ThreadLocalUtil.get();
-        Integer userId = (Integer) map.get("userId");
-
-        ForumDTO forum = forumService.getLikedForum(forumId, userId);
-        if (forum != null) {
-            return Result.success("YES", null);
-        } else {
-            return Result.error("NO");
-        }
     }
 }
