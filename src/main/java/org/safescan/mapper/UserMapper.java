@@ -14,4 +14,6 @@ public interface UserMapper {
     UserDTO findByUserId(int userId);
 
     void updateUserAvatar(int userId, String fileUrl);
+
+    void updatePassword(Integer userId, String encryptedPassword);
 }

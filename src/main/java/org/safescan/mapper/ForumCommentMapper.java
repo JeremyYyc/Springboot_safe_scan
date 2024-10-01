@@ -11,6 +11,8 @@ import java.util.List;
 public interface ForumCommentMapper {
     void addComment(ForumCommentDTO forumComment);
 
+    ResponseCommentDTO getByComment(ForumCommentDTO forumComment);
+
     List<ResponseCommentDTO> getParentComments(int offset, int size, Integer forumId);
 
     List<ResponseCommentDTO> getSonComments(int offset, int size, Integer forumId, Integer ancestorCommentId);
@@ -23,7 +25,7 @@ public interface ForumCommentMapper {
 
     void updateForums(Integer forumId, LocalDateTime updateTime, String state);
 
-    void updateForumComments(Integer parentCommentId, LocalDateTime updateTime, String state);
+    void updateForumComments(Integer parentCommentId, Integer ancestorCommentId, LocalDateTime updateTime, String state);
 
     ForumCommentDTO getByCommentId(Integer commentId);
 

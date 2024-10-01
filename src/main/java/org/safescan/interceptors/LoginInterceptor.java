@@ -54,7 +54,7 @@ public class LoginInterceptor implements HandlerInterceptor {
         } catch (Exception e) {
             // http responsive code is 401
             response.setStatus(401);
-            System.out.println(token);
+            System.out.println(e.getMessage());
             // Do not give pass permission
             return false;
         }

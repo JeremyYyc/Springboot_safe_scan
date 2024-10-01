@@ -19,7 +19,7 @@ public class ForumCommentServiceImpl implements ForumCommentService {
     private ForumCommentMapper forumCommentMapper;
 
     @Override
-    public void addComment(ForumCommentDTO forumComment) {
+    public ResponseCommentDTO addComment(ForumCommentDTO forumComment) {
         Map<String, Object> map = ThreadLocalUtil.get();
         Integer userId = (Integer) map.get("userId");
         // Ensure create time and update time are same
@@ -67,8 +67,11 @@ public class ForumCommentServiceImpl implements ForumCommentService {
 
         if (forumComment.getParentCommentId() != null) {
             // Add comment count in forum_comment when it is a son comment of a parent comment
-            forumCommentMapper.updateForumComments(forumComment.getParentCommentId(), time, "comment");
+            forumCommentMapper.updateForumComments(forumComment.getParentCommentId(),
+                   forumComment.getAncestorCommentId(), time, "comment");
         }
+
+        return forumCommentMapper.getByComment(forumComment);
     }
 
     @Override

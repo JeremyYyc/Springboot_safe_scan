@@ -31,4 +31,10 @@
         set avatar = #{fileUrl}
         where user_id = #{userId}
     </update>
+
+    <update id="updatePassword">
+        update users
+        set password = #{encryptedPassword}
+        where user_id = #{userId}
+    </update>
 </mapper>

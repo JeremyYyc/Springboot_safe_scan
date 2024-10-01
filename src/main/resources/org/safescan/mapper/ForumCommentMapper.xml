@@ -3,10 +3,31 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.safescan.mapper.ForumCommentMapper">
-    <insert id="addComment" parameterType="org.safescan.DTO.ForumCommentDTO">
+    <insert id="addComment" parameterType="org.safescan.DTO.ForumCommentDTO" useGeneratedKeys="true" keyProperty="commentId">
         insert into forum_comments(user_id, forum_id, ancestor_comment_id, parent_comment_id, content, create_time, update_time)
         values(#{userId}, #{forumId}, #{ancestorCommentId}, #{parentCommentId}, #{content}, #{createTime}, #{updateTime})
     </insert>
+
+    <select id="getByComment" parameterType="org.safescan.DTO.ForumCommentDTO" resultType="org.safescan.DTO.ResponseCommentDTO">
+        <if test="parentCommentId==null">
+            select fc.comment_id, u.user_id, u.username, u.avatar,
+            fc.ancestor_comment_id, null as parent_user_id, null as parent_username, null as parent_avatar,
+            fc.like_count, fc.comment_count, 0 as isLiked, fc.create_time
+            from forum_comments fc join users u on fc.user_id = u.user_id
+            where comment_id = #{commentId}
+        </if>
+
+        <if test="parentCommentId!=null">
+            select sc.comment_id, su.user_id, su.username, su.avatar,
+            sc.ancestor_comment_id , pu.user_id as parent_user_id, pu.username as parent_username, pu.avatar as parent_avatar,
+            sc.like_count, sc.comment_count, 0 as isLiked, sc.create_time
+            from forum_comments sc
+            join forum_comments pc on sc.parent_comment_id = pc.comment_id
+            join users su on sc.user_id = su.user_id
+            join users pu on pc.user_id = pu.user_id
+            where sc.comment_id = #{commentId}
+        </if>
+    </select>
 
     <select id="getParentComments" resultType="org.safescan.DTO.ResponseCommentDTO">
         select fc.comment_id, u.user_id, u.username, u.avatar,
@@ -93,6 +114,9 @@
             </choose>
         </set>
         where comment_id = #{parentCommentId}
+        <if test="ancestorCommentId != null">
+            or comment_id = #{ancestorCommentId}
+        </if>
     </update>
 
     <select id="getByCommentId" resultType="org.safescan.DTO.ForumCommentDTO">

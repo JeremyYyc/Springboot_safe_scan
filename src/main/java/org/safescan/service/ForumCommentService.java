@@ -6,7 +6,7 @@ import org.safescan.DTO.ResponseCommentDTO;
 import java.util.List;
 
 public interface ForumCommentService {
-    void addComment(ForumCommentDTO forumComment);
+    ResponseCommentDTO addComment(ForumCommentDTO forumComment);
 
     void deleteByCommentId(Integer commentId, Integer userId);
 

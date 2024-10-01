@@ -11,6 +11,8 @@ import java.util.List;
 public interface ForumMapper {
     void add(ForumDTO forum);
 
+    ResponseForumDTO getByForum(ForumDTO forum);
+
     ForumDTO getByForumId(int forumId);
 
     List<ResponseForumDTO> getForums(int offset, int size);

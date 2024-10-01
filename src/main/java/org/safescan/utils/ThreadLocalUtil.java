@@ -1,20 +1,20 @@
 package org.safescan.utils;
 
 public class ThreadLocalUtil {
-    //提供ThreadLocal对象
+    // Providing ThreadLocal Objects
     public static final ThreadLocal THREAD_LOCAL = new ThreadLocal();
 
-    //根据键获取值
+    // Get value according to key
     public static <T> T get(){
         return (T) THREAD_LOCAL.get();
     }
 
-    //储存键值对
+    // Storing key-value pairs
     public static void set(Object value) {
         THREAD_LOCAL.set(value);
     }
 
-    //清除ThreadLocal防止内存泄漏
+    // Clear ThreadLocal to prevent memory leaks
     public static void remove(){
         THREAD_LOCAL.remove();
     }

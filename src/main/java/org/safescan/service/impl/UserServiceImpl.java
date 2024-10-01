@@ -35,12 +35,17 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDTO findByUserId(int userId) {
+    public UserDTO findByUserId(Integer userId) {
         return userMapper.findByUserId(userId);
     }
 
     @Override
-    public void updateUserAvatar(int userId, String fileUrl) {
+    public void updateUserAvatar(Integer userId, String fileUrl) {
         userMapper.updateUserAvatar(userId, fileUrl);
+    }
+
+    @Override
+    public void updatePassword(Integer userId, String newPassword) {
+        userMapper.updatePassword(userId, Md5Util.hash(newPassword));
     }
 }

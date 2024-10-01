@@ -21,9 +21,9 @@ public class ForumController {
     private ForumService forumService;
 
     @PostMapping("/add")
-    public Result<Object> add(@RequestBody @Validated ForumDTO forumDTO) {
-        forumService.add(forumDTO);
-        return Result.success("Successfully posting this post!", null);
+    public Result<ResponseForumDTO> add(@RequestBody @Validated ForumDTO forum) {
+        ResponseForumDTO post = forumService.add(forum);
+        return Result.success("Successfully posting this post!", post);
     }
 
 

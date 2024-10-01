@@ -3,10 +3,11 @@ package org.safescan.service;
 import org.safescan.DTO.ForumDTO;
 import org.safescan.DTO.ResponseForumDTO;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface ForumService {
-    void add(ForumDTO forum);
+    ResponseForumDTO add(ForumDTO forum);
 
     ForumDTO getByForumId(Integer forumId);
 

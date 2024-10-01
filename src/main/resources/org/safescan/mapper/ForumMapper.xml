@@ -3,10 +3,18 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.safescan.mapper.ForumMapper">
-    <insert id="add" parameterType="org.safescan.DTO.ForumDTO">
+    <insert id="add" parameterType="org.safescan.DTO.ForumDTO" useGeneratedKeys="true" keyProperty="forumId">
         insert into forums(user_id, title, content, create_time, update_time)
         values (#{userId}, #{title}, #{content}, #{createTime}, #{updateTime})
     </insert>
+
+    <select id="getByForum" parameterType="org.safescan.DTO.ForumDTO" resultType="org.safescan.DTO.ResponseForumDTO">
+        select u.user_id, u.username, u.avatar, f.forum_id, 0 as isLiked,
+               f.title, f.content, f.like_count, f.comment_count, f.create_time
+        from forums f
+        inner join users u on u.user_id = f.user_id
+        where f.forum_id = #{forumId} and f.state = 'Readable'
+    </select>
 
     <select id="getByForumId" resultType="org.safescan.DTO.ForumDTO">
         select user_id, title, content, like_count, comment_count, state, create_time
@@ -15,7 +23,8 @@
     </select>
 
     <select id="getForums" resultType="org.safescan.DTO.ResponseForumDTO">
-        select u.user_id, u.username, u.avatar, f.forum_id, f.title, f.content, f.like_count, f.comment_count, f.create_time
+        select u.user_id, u.username, u.avatar, f.forum_id,
+               f.title, f.content, f.like_count, f.comment_count, f.create_time
         from forums f
         inner join users u on u.user_id = f.user_id
         where f.state = 'Readable'

@@ -21,11 +21,11 @@ public class ForumCommentController {
     private ForumCommentService forumCommentService;
 
     @PostMapping("/add")
-    public Result<Object> addComments(@RequestBody @Validated ForumCommentDTO forumComment) {
-        forumCommentService.addComment(forumComment);
+    public Result<ResponseCommentDTO> addComments(@RequestBody @Validated ForumCommentDTO forumComment) {
+        ResponseCommentDTO comment = forumCommentService.addComment(forumComment);
         String message = "Successfully comment this " +
                 (forumComment.getParentCommentId() == null ? "post!" : "comment!");
-        return Result.success(message, null);
+        return Result.success(message, comment);
     }
 
 

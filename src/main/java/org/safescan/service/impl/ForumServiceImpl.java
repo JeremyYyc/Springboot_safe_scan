@@ -24,16 +24,18 @@ public class ForumServiceImpl implements ForumService {
     private ForumCommentMapper forumCommentMapper;
 
     @Override
-    public void add(ForumDTO forum) {
+    public ResponseForumDTO add(ForumDTO forum) {
         // Put required elements int the object
-        forum.setCreateTime(LocalDateTime.now());
-        forum.setUpdateTime(LocalDateTime.now());
+        LocalDateTime time = LocalDateTime.now();
+        forum.setCreateTime(time);
+        forum.setUpdateTime(time);
 
         Map<String, Object> map = ThreadLocalUtil.get();
         Integer userId = (Integer) map.get("userId");
         forum.setUserId(userId);
 
         forumMapper.add(forum);
+        return forumMapper.getByForum(forum);
     }
 
     @Override
@@ -44,14 +46,14 @@ public class ForumServiceImpl implements ForumService {
     @Override
     public List<ResponseForumDTO> getForums(int page, int size, Integer userId) {
         int offset = page * size; // Calculating the offset
-        List<ResponseForumDTO> userForums = forumMapper.getForums(offset, size);
+        List<ResponseForumDTO> responseForums = forumMapper.getForums(offset, size);
 
-        for (ResponseForumDTO userForum : userForums) {
+        for (ResponseForumDTO forum : responseForums) {
             // If userId is null, it is public list method
-            boolean isLiked = userId != null && forumMapper.isLikedByUserId(userId, userForum.getForumId());
-            userForum.setLiked(isLiked);
+            boolean isLiked = userId != null && forumMapper.isLikedByUserId(userId, forum.getForumId());
+            forum.setLiked(isLiked);
         }
-        return userForums;
+        return responseForums;
     }
 
     @Override

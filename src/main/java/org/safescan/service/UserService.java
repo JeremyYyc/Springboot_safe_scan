@@ -9,7 +9,9 @@ public interface UserService {
 
     void update(UserDTO user);
 
-    UserDTO findByUserId(int userId);
+    UserDTO findByUserId(Integer userId);
 
-    void updateUserAvatar(int userId, String fileUrl);
+    void updateUserAvatar(Integer userId, String fileUrl);
+
+    void updatePassword(Integer userId, String newPassword);
 }

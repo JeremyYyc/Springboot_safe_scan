@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
 import org.safescan.DTO.Result;
 import org.safescan.DTO.UserDTO;
+import org.safescan.exception.FilePathException;
 import org.safescan.service.UserService;
 import org.safescan.utils.JwtUtil;
 import org.safescan.utils.Md5Util;
@@ -43,11 +44,11 @@ public class UserController {
     public Result<Object> register(@Email(message = "{email.invalid}") @NotEmpty(message = "{email.empty}") String email,
                            @Pattern(regexp = "^\\S{5,16}$", message = "{password.rules}") String password,
                            @Pattern(regexp = "^\\S{5,16}$", message = "{password.rules}") String rePassword) {
-        UserDTO registerUserDTO = userService.findByEmail(email);
+        UserDTO registerUser = userService.findByEmail(email);
 
         if (!password.equals(rePassword)) {
             return Result.error("Please enter the same rePassword as password!");
-        } else if (registerUserDTO == null) {
+        } else if (registerUser == null) {
             userService.registerByEmail(email, password);
             return Result.success("Successfully register!", null);
         } else {
@@ -59,20 +60,20 @@ public class UserController {
     public Result<String> login(@Email(message = "{email.invalid}") @NotEmpty(message = "{email.empty}") String email,
                         @Pattern(regexp = "^\\S{5,16}$", message = "{password.rules}") String password) {
         // Check weather current user exists
-        UserDTO loginUserDTO = userService.findByEmail(email);
-        if (loginUserDTO == null){
+        UserDTO loginUser = userService.findByEmail(email);
+        if (loginUser == null){
             return Result.error("Current user is not exists!");
         }
 
         // Check weather the password is correct
-        if (Md5Util.hash(password).equals(loginUserDTO.getPassword())){
+        if (Md5Util.hash(password).equals(loginUser.getPassword())){
             // Generate JWT token
             Map<String, Object> claims = new HashMap<>();
 
             // There are only two key-value pairs: userId and email,
             // so there are only these two in map of ThreadLocalUtils
-            claims.put("userId", loginUserDTO.getUserId());
-            claims.put("email", loginUserDTO.getEmail());
+            claims.put("userId", loginUser.getUserId());
+            claims.put("email", loginUser.getEmail());
             String token = JwtUtil.generateToken(claims);
 
             // Store token into redis
@@ -117,6 +118,29 @@ public class UserController {
     }
 
 
+    @PatchMapping("/update/pwd")
+    public Result<Object> updatePassword(
+            @Pattern(regexp = "^\\S{5,16}$", message = "{password.rules}") String oldPassword,
+            @Pattern(regexp = "^\\S{5,16}$", message = "{password.rules}") String newPassword,
+            @Pattern(regexp = "^\\S{5,16}$", message = "{password.rules}") String repPassword) {
+        Map<String, Object> map = ThreadLocalUtil.get();
+        int userId = (Integer) map.get("userId");
+
+        UserDTO user = userService.findByUserId(userId);
+        if (!Md5Util.hash(oldPassword).equals(user.getPassword())) {  // Incorrect old password
+            return Result.error("Incorrect original password!");
+        } else if (!Objects.equals(newPassword, repPassword)) {
+            return Result.error("These two passwords are not same!");
+        } else if (Objects.equals(newPassword, oldPassword)) {
+            return Result.error("New password can not be same as original password!");
+        }
+
+        userService.updatePassword(userId, newPassword);
+        return Result.success("Update Successfully!", null);
+
+    }
+
+
     @PatchMapping("/update/avatar")
     public Result<Object> updateAvatar(@RequestParam MultipartFile file) {
         Map<String, Object> map = ThreadLocalUtil.get();
@@ -130,7 +154,9 @@ public class UserController {
             // Make sure the upload directory exists
             File uploadDirFile = new File(uploadDir);
             if (!uploadDirFile.exists()) {
-                uploadDirFile.mkdirs();
+                if (!uploadDirFile.mkdirs()) {
+                    throw new FilePathException("Failed to create path for avatar!");
+                }
             }
 
             // Generate a unique file name for the file
