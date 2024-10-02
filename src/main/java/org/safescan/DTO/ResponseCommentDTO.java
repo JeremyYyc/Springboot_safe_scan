@@ -12,6 +12,7 @@ public class ResponseCommentDTO {
     private Integer userId;
     private String username;
     private String avatar;
+    private String content;
     private Integer ancestorCommentId;
 
     // If this comment is on another comment, it would have these attributes.

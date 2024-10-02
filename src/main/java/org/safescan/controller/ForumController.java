@@ -39,7 +39,7 @@ public class ForumController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
         List<ResponseForumDTO> forums = forumService.getForums(page, size, null);
-        return Result.success(forums);
+        return Result.success("Successfully get forums without token!" ,forums);
     }
 
 
@@ -51,12 +51,12 @@ public class ForumController {
         Integer userId = (Integer) map.get("userId");
 
         List<ResponseForumDTO> forums = forumService.getForums(page, size, userId);
-        return Result.success(forums);
+        return Result.success("Successfully get forums with token!", forums);
     }
 
 
     @PutMapping("/update")
-    public Result<Object> update(@RequestBody @Validated(ForumDTO.Update.class) ForumDTO forumDTO) {
+    public Result<ResponseForumDTO> update(@RequestBody @Validated(ForumDTO.Update.class) ForumDTO forumDTO) {
         Map<String, Object> map = ThreadLocalUtil.get();
         Integer userId = (Integer) map.get("userId");
 
@@ -67,8 +67,8 @@ public class ForumController {
             return Result.error("You are not allowed to update other user's post!");
         }
 
-        forumService.update(forumDTO);
-        return Result.success("Successfully update the post!", null);
+        ResponseForumDTO forum = forumService.update(forumDTO);
+        return Result.success("Successfully update the post!", forum);
     }
 
 

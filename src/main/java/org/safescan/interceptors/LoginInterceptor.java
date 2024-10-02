@@ -52,7 +52,7 @@ public class LoginInterceptor implements HandlerInterceptor {
             // Give pass permission
             return true;
         } catch (Exception e) {
-            // http responsive code is 401
+            // Set http responsive code as 401
             response.setStatus(401);
             System.out.println(e.getMessage());
             // Do not give pass permission

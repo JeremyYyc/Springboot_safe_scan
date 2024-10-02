@@ -10,7 +10,7 @@
 
     <select id="getByComment" parameterType="org.safescan.DTO.ForumCommentDTO" resultType="org.safescan.DTO.ResponseCommentDTO">
         <if test="parentCommentId==null">
-            select fc.comment_id, u.user_id, u.username, u.avatar,
+            select fc.comment_id, u.user_id, u.username, u.avatar, fc.content,
             fc.ancestor_comment_id, null as parent_user_id, null as parent_username, null as parent_avatar,
             fc.like_count, fc.comment_count, 0 as isLiked, fc.create_time
             from forum_comments fc join users u on fc.user_id = u.user_id
@@ -18,7 +18,7 @@
         </if>
 
         <if test="parentCommentId!=null">
-            select sc.comment_id, su.user_id, su.username, su.avatar,
+            select sc.comment_id, su.user_id, su.username, su.avatar, sc.content,
             sc.ancestor_comment_id , pu.user_id as parent_user_id, pu.username as parent_username, pu.avatar as parent_avatar,
             sc.like_count, sc.comment_count, 0 as isLiked, sc.create_time
             from forum_comments sc
@@ -30,7 +30,7 @@
     </select>
 
     <select id="getParentComments" resultType="org.safescan.DTO.ResponseCommentDTO">
-        select fc.comment_id, u.user_id, u.username, u.avatar,
+        select fc.comment_id, u.user_id, u.username, u.avatar, fc.content,
                fc.ancestor_comment_id, null as parent_user_id, null as parent_username, null as parent_avatar,
                fc.like_count, fc.comment_count, fc.create_time
         from forum_comments fc join users u on fc.user_id = u.user_id
@@ -42,7 +42,7 @@
     </select>
 
     <select id="getSonComments" resultType="org.safescan.DTO.ResponseCommentDTO">
-        select sc.comment_id, su.user_id, su.username, su.avatar,
+        select sc.comment_id, su.user_id, su.username, su.avatar, sc.content,
                sc.ancestor_comment_id , pu.user_id as parent_user_id, pu.username as parent_username, pu.avatar as parent_avatar,
                sc.like_count, sc.comment_count, sc.create_time
         from forum_comments sc

@@ -57,9 +57,10 @@ public class ForumServiceImpl implements ForumService {
     }
 
     @Override
-    public void update(ForumDTO forum) {
+    public ResponseForumDTO update(ForumDTO forum) {
         forum.setUpdateTime(LocalDateTime.now());
         forumMapper.update(forum);
+        return forumMapper.getByForum(forum);
     }
 
     @Override

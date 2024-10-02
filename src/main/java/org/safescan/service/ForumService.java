@@ -13,7 +13,7 @@ public interface ForumService {
 
     List<ResponseForumDTO> getForums(int page, int size, Integer userId);
 
-    void update(ForumDTO forum);
+    ResponseForumDTO update(ForumDTO forum);
 
     void delete(Integer forumId);
 
