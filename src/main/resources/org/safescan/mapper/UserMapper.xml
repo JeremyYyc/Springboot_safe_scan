@@ -34,7 +34,7 @@
 
     <update id="updatePassword">
         update users
-        set password = #{encryptedPassword}
+        set password = #{encryptedPassword}, update_time = #{updateTime}
         where user_id = #{userId}
     </update>
 </mapper>

@@ -44,6 +44,14 @@ public class ForumServiceImpl implements ForumService {
     }
 
     @Override
+    public ResponseForumDTO getByForum(ForumDTO forum, Integer userId) {
+        ResponseForumDTO responseForum = forumMapper.getByForum(forum);
+        boolean isLiked = userId != null && forumMapper.isLikedByUserId(userId, forum.getForumId());
+        responseForum.setLiked(isLiked);
+        return responseForum;
+    }
+
+    @Override
     public List<ResponseForumDTO> getForums(int page, int size, Integer userId) {
         int offset = page * size; // Calculating the offset
         List<ResponseForumDTO> responseForums = forumMapper.getForums(offset, size);

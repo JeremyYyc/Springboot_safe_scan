@@ -27,10 +27,24 @@ public class ForumController {
     }
 
 
-    @GetMapping("/detail")
-    public Result<ForumDTO> detail(Integer forumId) {
-        ForumDTO forumDTO = forumService.getByForumId(forumId);
-        return Result.success(forumDTO);
+    @GetMapping("/public/detail")
+    public Result<ResponseForumDTO> getForum(@RequestParam Integer forumId) {
+        ForumDTO forum = new ForumDTO();
+        forum.setForumId(forumId);
+        ResponseForumDTO responseForum = forumService.getByForum(forum, null);
+        return Result.success("Successfully get detail of corresponding forum without token", responseForum);
+    }
+
+
+    @GetMapping("/private/detail")
+    public Result<ResponseForumDTO> getForumByUser(@RequestParam Integer forumId) {
+        Map<String, Object> map = ThreadLocalUtil.get();
+        Integer userId = (Integer) map.get("userId");
+
+        ForumDTO forum = new ForumDTO();
+        forum.setForumId(forumId);
+        ResponseForumDTO responseForum = forumService.getByForum(forum, userId);
+        return Result.success("Successfully get detail of corresponding forum with token", responseForum);
     }
 
 

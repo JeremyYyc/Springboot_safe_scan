@@ -3,6 +3,8 @@ package org.safescan.mapper;
 import org.apache.ibatis.annotations.Mapper;
 import org.safescan.DTO.UserDTO;
 
+import java.time.LocalDateTime;
+
 @Mapper
 public interface UserMapper {
     UserDTO findByEmail(String email);
@@ -15,5 +17,5 @@ public interface UserMapper {
 
     void updateUserAvatar(int userId, String fileUrl);
 
-    void updatePassword(Integer userId, String encryptedPassword);
+    void updatePassword(Integer userId, String encryptedPassword, LocalDateTime updateTime);
 }

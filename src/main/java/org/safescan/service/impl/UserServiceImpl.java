@@ -46,6 +46,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void updatePassword(Integer userId, String newPassword) {
-        userMapper.updatePassword(userId, Md5Util.hash(newPassword));
+        userMapper.updatePassword(userId, Md5Util.hash(newPassword), LocalDateTime.now());
     }
 }
