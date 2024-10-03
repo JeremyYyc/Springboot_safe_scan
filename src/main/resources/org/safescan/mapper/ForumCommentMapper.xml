@@ -89,11 +89,11 @@
         <set>
             <choose>
                 <when test="state == 'comment'">
-                    comment_count = comment_count + 1, update_time = #{updateTime}
+                    comment_count = comment_count + #{counts}, update_time = #{updateTime}
                 </when>
 
                 <when test="state == 'delete'">
-                    comment_count = comment_count - 1, update_time = #{updateTime}
+                    comment_count = comment_count - #{counts}, update_time = #{updateTime}
                 </when>
             </choose>
         </set>
@@ -120,7 +120,7 @@
     </update>
 
     <select id="getByCommentId" resultType="org.safescan.DTO.ForumCommentDTO">
-        select user_id, forum_id, parent_comment_id, ancestor_comment_id, state
+        select user_id, forum_id, parent_comment_id, ancestor_comment_id, state, comment_count
         from forum_comments
         where comment_id = #{commentId}
     </select>
@@ -128,7 +128,7 @@
     <update id="deleteByForumCommentId">
         update forum_comments
         set state = 'Deleted', update_time = #{updateTime}
-        <where>
+        where
             <if test="userId == null">
                 forum_id = #{commentId}
             </if>
@@ -136,7 +136,12 @@
             <if test="userId != null">
                 comment_id = #{commentId} and user_id = #{userId}
             </if>
-        </where>
+    </update>
+
+    <update id="deleteByAncestorCommentId">
+        update forum_comments
+        set state = 'Deleted', update_time = #{updateTime}
+        where ancestor_comment_id = #{commentId}
     </update>
 
     <select id="getLikedComment" resultType="org.safescan.DTO.ForumCommentDTO">

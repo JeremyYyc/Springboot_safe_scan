@@ -23,13 +23,15 @@ public interface ForumCommentMapper {
 
     String getStateByCommentId(Integer commentId);
 
-    void updateForums(Integer forumId, LocalDateTime updateTime, String state);
+    void updateForums(Integer forumId, LocalDateTime updateTime, String state, Integer counts);
 
     void updateForumComments(Integer parentCommentId, Integer ancestorCommentId, LocalDateTime updateTime, String state);
 
     ForumCommentDTO getByCommentId(Integer commentId);
 
     void deleteByForumCommentId(Integer commentId, Integer userId, LocalDateTime updateTime);
+
+    int deleteByAncestorCommentId(Integer commentId, LocalDateTime updateTime);
 
     ForumCommentDTO getLikedComment(Integer commentId, Integer userId);
 

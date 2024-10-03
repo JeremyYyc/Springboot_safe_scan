@@ -24,7 +24,8 @@ public class WebConfig implements WebMvcConfigurer {
                 "/forum/public/detail",
                 "/comment/public/get",
                 "/comment/public/get/son",
-                "/uploads/**"
+                "/uploads/**",
+                "/camera/upload"
         );
     }
 
@@ -32,6 +33,7 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/uploads/**")
-                .addResourceLocations("file:E:/yyc/safe_scan/Avatars/");
+                .addResourceLocations("file:E:/yyc/safe_scan/Avatars/")
+                .addResourceLocations("file:E:/yyc/safe_scan/Videos/");
     }
 }

@@ -5,5 +5,7 @@ spring:
     password: 123456
 
 app:
-  upload:
+  uploadAvatars:
     dir: E:/yyc/safe_scan/Avatars
+  uploadVideos:
+    dir: E:/yyc/safe_scan/Videos

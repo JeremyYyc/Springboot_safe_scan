@@ -37,7 +37,7 @@ public class UserController {
     private UserService userService;
     @Autowired
     private StringRedisTemplate stringRedisTemplate;
-    @Value("${app.upload.dir}")
+    @Value("${app.uploadAvatars.dir}")
     private String uploadDir;
 
     @PostMapping("/register")
@@ -155,7 +155,7 @@ public class UserController {
             File uploadDirFile = new File(uploadDir);
             if (!uploadDirFile.exists()) {
                 if (!uploadDirFile.mkdirs()) {
-                    throw new FilePathException("Failed to create path for avatar!");
+                    throw new FilePathException("Failed to create path for avatars!");
                 }
             }
 

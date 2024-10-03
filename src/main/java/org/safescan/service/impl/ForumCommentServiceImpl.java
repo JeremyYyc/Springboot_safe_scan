@@ -63,7 +63,7 @@ public class ForumCommentServiceImpl implements ForumCommentService {
 
         // Update comment information in database table comments and forumComments under different situations
         // Add comment count in forums for both situation
-        forumCommentMapper.updateForums(forumComment.getForumId(), time, "comment");
+        forumCommentMapper.updateForums(forumComment.getForumId(), time, "comment", 1);
 
         if (forumComment.getParentCommentId() != null) {
             // Add comment count in forum_comment when it is a son comment of a parent comment
@@ -82,7 +82,28 @@ public class ForumCommentServiceImpl implements ForumCommentService {
     @Override
     public void deleteByCommentId(Integer commentId, Integer userId) {
         try {
-            forumCommentMapper.deleteByForumCommentId(commentId, userId, LocalDateTime.now());
+            LocalDateTime time = LocalDateTime.now();
+            ForumCommentDTO forum = forumCommentMapper.getByCommentId(commentId);
+
+            // Delete a parent comment & a sub comment
+            forumCommentMapper.deleteByForumCommentId(commentId, userId, time);
+
+            // Update comment counts in database whenever delete a parent comment or sub comment
+            forumCommentMapper.updateForums(forum.getForumId(), LocalDateTime.now(),
+                    "delete",1);
+
+            // Delete all sub comments of this parent comment (ancestor comment)
+            // If it's a sub comment, no records would be deleted at this time
+            int deletedSubCommentCounts = forumCommentMapper.deleteByAncestorCommentId(commentId, time);
+            forumCommentMapper.updateForums(forum.getForumId(), LocalDateTime.now(),
+                    "delete", deletedSubCommentCounts);     // Update its forum record
+
+            // If this comment is a sub comment
+            if (forum.getAncestorCommentId() != null) {
+                // Update comment counts in database when delete a sub comment under its ancestor comment record
+                forumCommentMapper.updateForumComments(forum.getParentCommentId(), forum.getAncestorCommentId(),
+                        LocalDateTime.now(), "delete");
+            }
         } catch (Exception e) {
             throw new RuntimeException("Unable to find this comment!");
         }
