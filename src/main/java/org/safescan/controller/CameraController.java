@@ -57,7 +57,7 @@ public class CameraController {
             String pythonServiceResponse = cameraService.callPythonService(filePath.toString());
             System.out.println(pythonServiceResponse);
 
-            return Result.success("Video uploaded successfully!", fileUrl);
+            return Result.success("Video uploaded successfully!", pythonServiceResponse);
         } catch (IOException e) {
             return Result.error("Failed to upload video!");
         }

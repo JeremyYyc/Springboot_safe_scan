@@ -3,6 +3,10 @@ spring:
     url: jdbc:mysql://127.0.0.1:3306/safe_scan?useSSL=false
     username: root
     password: 123456
+  data:
+    redis:
+      host: 127.0.0.1
+      port: 6379
 
 app:
   uploadAvatars:

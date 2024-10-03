@@ -34,6 +34,8 @@ public class WebConfig implements WebMvcConfigurer {
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/uploads/**")
                 .addResourceLocations("file:E:/yyc/safe_scan/Avatars/")
-                .addResourceLocations("file:E:/yyc/safe_scan/Videos/");
+                .addResourceLocations("file:E:/yyc/safe_scan/Videos/")
+                .addResourceLocations("file:/srv/safe_scan/avatars/")
+                .addResourceLocations("file:/srv/safe_scan/videos/");
     }
 }
