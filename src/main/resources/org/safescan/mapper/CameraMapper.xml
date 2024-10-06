@@ -3,8 +3,14 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.safescan.mapper.CameraMapper">
-<!--    <insert id="addReport">-->
-<!--        insert into forums(content)-->
-<!--        values (#{})-->
-<!--    </insert>-->
+    <insert id="addMetaData" parameterType="org.safescan.DTO.ReportDTO" useGeneratedKeys="true" keyProperty="reportId">
+        insert into reports(user_id, latitude, longitude, videoUrl, create_time, update_time)
+        values (#{userId}, #{latitude}, #{longitude}, #{videoUrl}, #{createTime}, #{updateTime})
+    </insert>
+
+    <update id="addReport">
+        update reports
+        set content = #{content}, update_time = #{updateTime}
+        where report_id = #{reportId}
+    </update>
 </mapper>

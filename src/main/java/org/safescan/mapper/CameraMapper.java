@@ -1,9 +1,13 @@
 package org.safescan.mapper;
 
-import org.safescan.DTO.ResponseReportDTO;
 import org.apache.ibatis.annotations.Mapper;
+import org.safescan.DTO.ReportDTO;
+
+import java.time.LocalDateTime;
 
 @Mapper
 public interface CameraMapper {
-//    public void addReport(ResponseReportDTO reportDTO);
+    void addReport(Integer reportId, String content, LocalDateTime updateTime);
+
+    void addMetaData(ReportDTO reportMetadata);
 }

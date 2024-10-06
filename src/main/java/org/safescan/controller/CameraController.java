@@ -1,16 +1,16 @@
 package org.safescan.controller;
 
-import org.safescan.DTO.ResponseReportDTO;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.safescan.DTO.ReportDTO;
 import org.safescan.DTO.Result;
 import org.safescan.exception.FilePathException;
 import org.safescan.service.CameraService;
+import org.safescan.utils.ThreadLocalUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -18,6 +18,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/camera")
@@ -30,8 +31,12 @@ public class CameraController {
     private String videoUploadDir;
 
     @PostMapping("/upload")
-    public Result<ResponseReportDTO> uploadVideo(@RequestParam("video") MultipartFile videoFile) {
-        System.out.println("Received file: " + videoFile.getOriginalFilename());
+    public Result<ReportDTO> uploadVideo(
+            @RequestPart("video") MultipartFile videoFile,
+            @RequestParam("report") String reportMetadataJson) {
+        Map<String, Object> map = ThreadLocalUtil.get();
+        int userId = (Integer) map.get("userId");
+
         if (videoFile.isEmpty()) {
             return Result.error("No file uploaded.");
         }
@@ -50,15 +55,34 @@ public class CameraController {
             videoFile.transferTo(filePath);
             System.out.println("File saved to: " + filePath);
 
+            // Generate video store url
             String fileUrl = ServletUriComponentsBuilder.fromCurrentContextPath()
                     .path("/uploads/")
                     .path(fileName)
                     .toUriString();
 
-            String pythonServiceResponse = cameraService.callPythonService(filePath.toString());
+            ObjectMapper objectMapper = new ObjectMapper();
+            ReportDTO reportMetadata;
+            try {
+                reportMetadata = objectMapper.readValue(reportMetadataJson, ReportDTO.class);
+            } catch (JsonProcessingException e) {
+                return Result.error(e.getMessage());
+            }
 
-            // Handle response data
-            ResponseReportDTO responseReport = cameraService.handleResponse(pythonServiceResponse);
+            // Store user id and url value into report object and store it into database
+            reportMetadata.setUserId(userId);
+            reportMetadata.setVideoUrl(fileUrl);
+            ReportDTO report = cameraService.handleMetaData(reportMetadata);
+
+            // Execute python script to generate report by JSON data type
+            String responseBody = cameraService.callPythonService(filePath.toString(), report);
+
+            // Store report data into database
+            ReportDTO responseReport = cameraService.handleResponse(responseBody, report);
+
+            // Generate url for key frames
+            responseReport = cameraService.
+                    generateUrl(responseReport.getContent().getRepresentativeImages(), responseReport);
 
             return Result.success("Video uploaded successfully!", responseReport);
         } catch (IOException e) {

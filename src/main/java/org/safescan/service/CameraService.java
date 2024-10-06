@@ -1,9 +1,16 @@
 package org.safescan.service;
 
-import org.safescan.DTO.ResponseReportDTO;
+import org.safescan.DTO.ReportDTO;
+
+import java.util.List;
 
 public interface CameraService {
-    public String callPythonService(String videoFilePath);
+    String callPythonService(String videoFilePath, ReportDTO report);
 
-    ResponseReportDTO handleResponse(String pythonServiceResponse);
+    ReportDTO handleResponse(String pythonServiceResponse, ReportDTO report);
+
+    ReportDTO handleMetaData(ReportDTO reportMetadata);
+
+    ReportDTO generateUrl(List<String> representativeImages, ReportDTO report);
 }
+

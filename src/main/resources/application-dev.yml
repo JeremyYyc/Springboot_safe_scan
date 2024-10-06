@@ -10,6 +10,8 @@ spring:
 
 app:
   uploadAvatars:
-    dir: C:/Users/Jesse/Desktop/Avatars
+    dir: E:/yyc/safe_scan/Avatars
   uploadVideos:
-    dir: C:/Users/Jesse/Desktop/Videos
+    dir: E:/yyc/safe_scan/Videos
+  generatedKeyFrame:
+    dir: E:/yyc/safe_scan/py

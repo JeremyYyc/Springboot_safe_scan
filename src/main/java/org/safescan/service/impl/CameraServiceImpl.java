@@ -2,11 +2,17 @@ package org.safescan.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import okhttp3.*;
-import org.safescan.DTO.ResponseReportDTO;
+import org.safescan.DTO.ReportDTO;
+import org.safescan.DTO.ResponseReportContentDTO;
 import org.safescan.mapper.CameraMapper;
 import org.safescan.service.CameraService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import java.io.IOException;
@@ -16,7 +22,7 @@ public class CameraServiceImpl implements CameraService {
     @Autowired
     private CameraMapper cameraMapper;
 
-    public String callPythonService(String videoFilePath){
+    public String callPythonService(String videoFilePath, ReportDTO report){
         OkHttpClient client = new OkHttpClient.Builder()
                 .connectTimeout(5, TimeUnit.MINUTES)
                 .readTimeout(5, TimeUnit.MINUTES)
@@ -38,28 +44,62 @@ public class CameraServiceImpl implements CameraService {
             if (response.isSuccessful()) {
                 // System.out.println("Y");
                 // return response.body().string();
-                String responseBody = response.body().string();
-                System.out.println("Python service response: " + responseBody);  // 打印原始响应
+                String responseBody = response.body() != null ? response.body().string() : null;
+                System.out.println("Python service response: " + responseBody);
                 return responseBody;
             } else {
                 System.out.println("Failed to call Python service");
-                return "Error in calling Python service: " + response.message();
+                throw new RuntimeException("Error in calling Python service: " + response.message());
             }
         } catch (IOException e) {
-            return "Exception in calling Python service: " + e.getMessage();
+            throw new RuntimeException("Exception in calling Python service: " + e.getMessage());
         }
     }
 
     @Override
-    public ResponseReportDTO handleResponse(String pythonServiceResponse) {
+    public ReportDTO handleResponse(String pythonServiceResponse, ReportDTO report) {
+        LocalDateTime time = LocalDateTime.now();
         ObjectMapper objectMapper = new ObjectMapper();
         try {
-            ResponseReportDTO reportDTO = objectMapper.readValue(pythonServiceResponse, ResponseReportDTO.class);
-            // TODO: Store data into database by Mapper
-            // cameraMapper.addReport(reportDTO);
-            return reportDTO;
+            ResponseReportContentDTO reportContent = objectMapper.
+                    readValue(pythonServiceResponse, ResponseReportContentDTO.class);
+
+            // Store data into database by Mapper
+            report.setContent(reportContent);
+            report.setUpdateTime(time);
+            cameraMapper.addReport(report.getReportId(), pythonServiceResponse, time);
+            return report;
         } catch (IOException e) {
             throw new RuntimeException("Failed to parse Python service response", e);
         }
+    }
+
+    @Override
+    public ReportDTO handleMetaData(ReportDTO reportMetadata) {
+        LocalDateTime time = LocalDateTime.now();
+        reportMetadata.setCreateTime(time);
+        reportMetadata.setUpdateTime(time);
+        cameraMapper.addMetaData(reportMetadata);
+        return reportMetadata;
+    }
+
+    @Override
+    public ReportDTO generateUrl(List<String> representativeImages, ReportDTO report) {
+        List<String> representativeImagesUrl = new ArrayList<>();
+
+        // Generate video store url
+        for (String image : representativeImages) {
+            String imagePath = image.replace("\\", "/").replace("./", "");
+
+            String fileUrl = ServletUriComponentsBuilder.fromCurrentContextPath()
+                    .path("/generated/")
+                    .path(imagePath)
+                    .toUriString();
+            representativeImagesUrl.add(fileUrl);
+        }
+
+        report.getContent().setRepresentativeImages(representativeImagesUrl);
+        return report;
+
     }
 }

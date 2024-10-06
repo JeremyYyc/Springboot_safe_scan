@@ -20,6 +20,9 @@ public class WebConfig implements WebMvcConfigurer {
     @Value("${app.uploadVideos.dir}")
     private String videoUploadUrl;
 
+    @Value("${app.generatedKeyFrame.dir}")
+    private String generatedKeyFrameUrl;
+
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         // Add an interceptor
@@ -32,7 +35,7 @@ public class WebConfig implements WebMvcConfigurer {
                 "/comment/public/get",
                 "/comment/public/get/son",
                 "/uploads/**",
-                "/camera/upload"
+                "/generated/**"
         );
     }
 
@@ -40,7 +43,10 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/uploads/**")
-                .addResourceLocations("file:"+ avatarUploadUrl +"/")
-                .addResourceLocations("file:"+ videoUploadUrl +"/");
+                .addResourceLocations("file:" + avatarUploadUrl + "/")
+                .addResourceLocations("file:" + videoUploadUrl + "/");
+
+        registry.addResourceHandler("/generated/**")
+                .addResourceLocations("file:" + generatedKeyFrameUrl + "/");
     }
 }
