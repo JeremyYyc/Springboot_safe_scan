@@ -1,5 +1,6 @@
 package org.safescan.controller;
 
+import org.safescan.DTO.ResponseReportDTO;
 import org.safescan.DTO.Result;
 import org.safescan.exception.FilePathException;
 import org.safescan.service.CameraService;
@@ -29,7 +30,7 @@ public class CameraController {
     private String videoUploadDir;
 
     @PostMapping("/upload")
-    public Result<String> uploadVideo(@RequestParam("video") MultipartFile videoFile) {
+    public Result<ResponseReportDTO> uploadVideo(@RequestParam("video") MultipartFile videoFile) {
         System.out.println("Received file: " + videoFile.getOriginalFilename());
         if (videoFile.isEmpty()) {
             return Result.error("No file uploaded.");
@@ -55,9 +56,11 @@ public class CameraController {
                     .toUriString();
 
             String pythonServiceResponse = cameraService.callPythonService(filePath.toString());
-            System.out.println(pythonServiceResponse);
 
-            return Result.success("Video uploaded successfully!", pythonServiceResponse);
+            // Handle response data
+            ResponseReportDTO responseReport = cameraService.handleResponse(pythonServiceResponse);
+
+            return Result.success("Video uploaded successfully!", responseReport);
         } catch (IOException e) {
             return Result.error("Failed to upload video!");
         }

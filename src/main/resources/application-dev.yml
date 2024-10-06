@@ -10,6 +10,6 @@ spring:
 
 app:
   uploadAvatars:
-    dir: E:/yyc/safe_scan/Avatars
+    dir: C:/Users/Jesse/Desktop/Avatars
   uploadVideos:
-    dir: E:/yyc/safe_scan/Videos
+    dir: C:/Users/Jesse/Desktop/Videos
