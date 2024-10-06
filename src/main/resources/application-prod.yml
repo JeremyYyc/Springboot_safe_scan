@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:mysql://34.40.148.245:3306/safe_scan?useSSL=false
+    url: jdbc:mysql://34.87.236.86:3306/safe_scan?useSSL=false
     username: root-safe-scan
     password: 123456
   data:
