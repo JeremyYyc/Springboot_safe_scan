@@ -33,8 +33,11 @@ public class ReportController {
         // Generate url for key frames
         for (int i = 0; i < reportsList.size(); i++) {
             ReportDTO report = reportsList.get(i);
-            report = cameraService.generateUrl(report.getContent().getRepresentativeImages(), report);
-            reportsList.set(i, report);
+            List<String> images = report.getContent().getRepresentativeImages();
+            if (images != null) {
+                report = cameraService.generateUrl(images, report);
+                reportsList.set(i, report);
+            }
         }
 
         return Result.success("Successfully get report by user: " + userId, reportsList);

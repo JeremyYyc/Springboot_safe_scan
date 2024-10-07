@@ -22,12 +22,14 @@ public class ReportServiceImpl implements ReportService {
 
         ObjectMapper objectMapper = new ObjectMapper();
         for (ReportDTO report : reportLists) {
-            ResponseReportContentDTO reportContent;
+            ResponseReportContentDTO reportContent = new ResponseReportContentDTO();
             String contentJson = reportMapper.getContent(report.getReportId());
-            try {
-                reportContent = objectMapper.readValue(contentJson, ResponseReportContentDTO.class);
-            } catch (IOException e) {
-                throw new RuntimeException("Failed to parse response from database");
+            if (contentJson != null) {
+                try {
+                    reportContent = objectMapper.readValue(contentJson, ResponseReportContentDTO.class);
+                } catch (IOException e) {
+                    throw new RuntimeException("Failed to parse response from database");
+                }
             }
             report.setContent(reportContent);
         }
