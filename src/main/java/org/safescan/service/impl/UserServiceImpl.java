@@ -41,7 +41,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void updateUserAvatar(Integer userId, String fileUrl) {
-        userMapper.updateUserAvatar(userId, fileUrl);
+        userMapper.updateUserAvatar(userId, fileUrl, LocalDateTime.now());
     }
 
     @Override

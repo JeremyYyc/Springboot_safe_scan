@@ -28,7 +28,7 @@
 
     <update id="updateUserAvatar">
         update users
-        set avatar = #{fileUrl}
+        set avatar = #{fileUrl}, update_time = #{updateTime}
         where user_id = #{userId}
     </update>
 
