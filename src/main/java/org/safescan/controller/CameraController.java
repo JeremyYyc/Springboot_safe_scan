@@ -6,6 +6,7 @@ import org.safescan.DTO.ReportDTO;
 import org.safescan.DTO.Result;
 import org.safescan.exception.FilePathException;
 import org.safescan.service.CameraService;
+import org.safescan.service.UserService;
 import org.safescan.utils.ThreadLocalUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,6 +27,8 @@ import java.util.Map;
 public class CameraController {
     @Autowired
     CameraService cameraService;
+    @Autowired
+    UserService userService;
 
     @Value("${app.uploadVideos.dir}")
     private String videoUploadDir;
@@ -67,6 +70,12 @@ public class CameraController {
                 reportMetadata = objectMapper.readValue(reportMetadataJson, ReportDTO.class);
             } catch (JsonProcessingException e) {
                 return Result.error(e.getMessage());
+            }
+
+            if (reportMetadata.getAttributes() == null) {
+                reportMetadata.setAttributes(userService.getAttributes(userId));
+            } else {
+                userService.setAttributes(userId, reportMetadata.getAttributes());
             }
 
             // Store user id and url value into report object and store it into database

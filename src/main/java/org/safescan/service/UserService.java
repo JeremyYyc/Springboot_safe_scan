@@ -1,5 +1,6 @@
 package org.safescan.service;
 
+import org.safescan.DTO.AttributesDTO;
 import org.safescan.DTO.UserDTO;
 
 public interface UserService {
@@ -14,4 +15,8 @@ public interface UserService {
     void updateUserAvatar(Integer userId, String fileUrl);
 
     void updatePassword(Integer userId, String newPassword);
+
+    AttributesDTO getAttributes(Integer userId);
+
+    void setAttributes(Integer userId, AttributesDTO attributes);
 }

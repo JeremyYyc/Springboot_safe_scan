@@ -1,5 +1,6 @@
 package org.safescan.service.impl;
 
+import org.safescan.DTO.AttributesDTO;
 import org.safescan.DTO.UserDTO;
 import org.safescan.mapper.UserMapper;
 import org.safescan.service.UserService;
@@ -47,5 +48,24 @@ public class UserServiceImpl implements UserService {
     @Override
     public void updatePassword(Integer userId, String newPassword) {
         userMapper.updatePassword(userId, Md5Util.hash(newPassword), LocalDateTime.now());
+    }
+
+    @Override
+    public AttributesDTO getAttributes(Integer userId) {
+        AttributesDTO attributes = userMapper.getAttributes(userId);
+        if (attributes == null) {
+            attributes = new AttributesDTO();
+        }
+        return attributes;
+    }
+
+    @Override
+    public void setAttributes(Integer userId, AttributesDTO attributes) {
+        AttributesDTO attributesTest = userMapper.getAttributes(userId);
+        if (attributesTest == null) {
+            userMapper.setAttributes(userId, attributes);
+        } else {
+            userMapper.updateAttributes(userId, attributes);
+        }
     }
 }

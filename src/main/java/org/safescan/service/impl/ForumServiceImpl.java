@@ -66,9 +66,16 @@ public class ForumServiceImpl implements ForumService {
 
     @Override
     public ResponseForumDTO update(ForumDTO forum) {
+        Map<String, Object> map = ThreadLocalUtil.get();
+        Integer userId = (Integer) map.get("userId");
+
         forum.setUpdateTime(LocalDateTime.now());
         forumMapper.update(forum);
-        return forumMapper.getByForum(forum);
+
+        ResponseForumDTO responseForum = forumMapper.getByForum(forum);
+        boolean isLiked = forumMapper.isLikedByUserId(userId, responseForum.getForumId());
+        responseForum.setLiked(isLiked);
+        return responseForum;
     }
 
     @Override

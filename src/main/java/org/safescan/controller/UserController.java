@@ -3,6 +3,7 @@ package org.safescan.controller;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
+import org.safescan.DTO.AttributesDTO;
 import org.safescan.DTO.Result;
 import org.safescan.DTO.UserDTO;
 import org.safescan.exception.FilePathException;
@@ -180,5 +181,24 @@ public class UserController {
         } catch (IOException e) {
             return Result.error("Failed to upload avatar: " + e.getMessage());
         }
+    }
+
+    @GetMapping("/attributes/get")
+    public Result<AttributesDTO> getAttributes() {
+        Map<String, Object> map = ThreadLocalUtil.get();
+        int userId = (Integer) map.get("userId");
+
+        AttributesDTO attributes = userService.getAttributes(userId);
+        return Result.success("Successfully get attributes by user: #" + userId, attributes);
+    }
+
+
+    @PostMapping("/attributes/put")
+    public Result<AttributesDTO> putAttributes(@RequestBody @Validated AttributesDTO attributes) {
+        Map<String, Object> map = ThreadLocalUtil.get();
+        int userId = (Integer) map.get("userId");
+
+        userService.setAttributes(userId, attributes);
+        return Result.success("Successfully put attributes data into database", attributes);
     }
 }

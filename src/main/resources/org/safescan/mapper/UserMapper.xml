@@ -37,4 +37,23 @@
         set password = #{encryptedPassword}, update_time = #{updateTime}
         where user_id = #{userId}
     </update>
+
+    <select id="getAttributes" resultType="org.safescan.DTO.AttributesDTO">
+        select pregnant, children, elderly, disabled, allergic, pets
+        from attributes
+        where user_id = #{userId}
+    </select>
+
+    <insert id="setAttributes" parameterType="org.safescan.DTO.AttributesDTO">
+        insert into attributes(user_id, pregnant, children, elderly, disabled, allergic, pets)
+        values (#{userId}, #{attributes.pregnant}, #{attributes.children}, #{attributes.elderly},
+                #{attributes.disabled}, #{attributes.allergic}, #{attributes.pets})
+    </insert>
+
+    <update id="updateAttributes" parameterType="org.safescan.DTO.AttributesDTO">
+        update attributes
+        set pregnant = #{attributes.pregnant}, children = #{attributes.children}, elderly = #{attributes.elderly},
+            disabled = #{attributes.disabled}, allergic = #{attributes.allergic}, pets = #{attributes.pets}
+        where user_id = #{userId}
+    </update>
 </mapper>
