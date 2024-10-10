@@ -80,31 +80,24 @@ public class ReportServiceImpl implements ReportService {
                 }
 
                 List<String> keyFrames = reportContent.getRepresentativeImages();
-                String filename = keyFramesDir + keyFrames.get(0).replace("\\", "/")
+                if (keyFrames != null) {
+                    String filename = keyFramesDir + keyFrames.get(0).replace("\\", "/")
                             .replace("./", "/");
-                Path path = Paths.get(filename);
-                File toDelete = new File(path.getParent().toString());
+                    Path path = Paths.get(filename);
+                    File toDelete = new File(path.getParent().toString());
 
-                File[] allContents = toDelete.listFiles();
-                if (allContents != null) {
-                    for (File file : allContents) {
-                        if (!file.delete()) {
-                            throw new RuntimeException("Error in deleting this file: " + file);
+                    File[] allContents = toDelete.listFiles();
+                    if (allContents != null) {
+                        for (File file : allContents) {
+                            if (!file.delete()) {
+                                throw new RuntimeException("Error in deleting this file: " + file);
+                            }
                         }
                     }
+                    if (!toDelete.delete()) {
+                        throw new RuntimeException("Error in deleting this file: " + toDelete);
+                    }
                 }
-                if (!toDelete.delete()) {
-                    throw new RuntimeException("Error in deleting this file: " + toDelete);
-                }
-
-                // Delete reports txt file
-//                File toDeleteTxt = new File(path
-//                        .getParent().toString()
-//                        .replace("/extracted_frames/frames_", "/reports/report_"));
-//                System.out.println("report: " + toDeleteTxt);
-//                if (!toDeleteTxt.delete()) {
-//                    throw new RuntimeException("Error in deleting this file: " + toDeleteTxt);
-//                }
             }
 
             if (isFileDeleted) {

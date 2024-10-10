@@ -82,13 +82,15 @@ public class CameraController {
                 userService.setAttributes(userId, reportMetadata.getAttributes());
             }
 
-            // Store user id and url value into report object and store it into database
+            // Set value into report meta data
             reportMetadata.setUserId(userId);
             reportMetadata.setVideoUrl(fileUrl);
-            ReportDTO report = cameraService.handleMetaData(reportMetadata);
 
             // Execute python script to generate report by JSON data type
-            String responseBody = cameraService.callPythonService(filePath.toString(), report);
+            String responseBody = cameraService.callPythonService(filePath.toString(), reportMetadata);
+
+            // Store user id and url value into report object and store it into database
+            ReportDTO report = cameraService.handleMetaData(reportMetadata);
 
             // Store report data into database
             ReportDTO responseReport = cameraService.handleResponse(responseBody, report);
