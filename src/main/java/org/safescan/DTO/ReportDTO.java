@@ -12,6 +12,7 @@ public class ReportDTO {
     private Integer userId;
     private BigDecimal latitude;
     private BigDecimal longitude;
+    private String addressName;
     private String videoUrl;
     private ResponseReportContentDTO content;
     private AttributesDTO attributes;

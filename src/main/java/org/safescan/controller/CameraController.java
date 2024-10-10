@@ -56,7 +56,6 @@ public class CameraController {
 
         try {
             videoFile.transferTo(filePath);
-            System.out.println("File saved to: " + filePath);
 
             // Generate video store url
             String fileUrl = ServletUriComponentsBuilder.fromCurrentContextPath()
@@ -65,12 +64,17 @@ public class CameraController {
                     .toUriString();
 
             ObjectMapper objectMapper = new ObjectMapper();
-            ReportDTO reportMetadata;
-            try {
-                reportMetadata = objectMapper.readValue(reportMetadataJson, ReportDTO.class);
-            } catch (JsonProcessingException e) {
-                return Result.error(e.getMessage());
+            ReportDTO reportMetadata = new ReportDTO();
+            if (reportMetadataJson == null || reportMetadataJson.trim().isEmpty()) {
+                reportMetadata.setUserId(userId);
+            } else {
+                try {
+                    reportMetadata = objectMapper.readValue(reportMetadataJson, ReportDTO.class);
+                } catch (JsonProcessingException e) {
+                    return Result.error(e.getMessage());
+                }
             }
+
 
             if (reportMetadata.getAttributes() == null) {
                 reportMetadata.setAttributes(userService.getAttributes(userId));

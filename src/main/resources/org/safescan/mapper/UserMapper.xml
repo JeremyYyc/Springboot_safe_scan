@@ -21,7 +21,7 @@
     </update>
 
     <select id="findByUserId" resultType="org.safescan.DTO.UserDTO">
-        select user_id, username, email, password, avatar
+        select user_id, username, email, avatar
         from users
         where user_id = #{userId};
     </select>

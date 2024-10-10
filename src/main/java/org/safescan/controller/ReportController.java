@@ -7,9 +7,7 @@ import org.safescan.service.ReportService;
 import org.safescan.utils.ThreadLocalUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
@@ -41,5 +39,15 @@ public class ReportController {
         }
 
         return Result.success("Successfully get report by user: " + userId, reportsList);
+    }
+
+
+    @DeleteMapping("/delete")
+    public Result<Object> deleteReports(@RequestParam Integer reportId) {
+        Map<String, Object> map = ThreadLocalUtil.get();
+        int userId = (Integer) map.get("userId");
+
+        reportService.deleteReports(userId, reportId);
+        return Result.success("Successfully delete this report!", null);
     }
 }

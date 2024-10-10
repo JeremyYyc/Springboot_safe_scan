@@ -6,15 +6,26 @@ import org.safescan.DTO.ResponseReportContentDTO;
 import org.safescan.mapper.ReportMapper;
 import org.safescan.service.ReportService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class ReportServiceImpl implements ReportService {
     @Autowired
     ReportMapper reportMapper;
+
+    @Value("${app.uploadVideos.dir}")
+    private String videoUploadDir;
+
+    @Value("${app.generatedKeyFrame.dir}")
+    private String keyFramesDir;
 
     @Override
     public List<ReportDTO> getReports(Integer userId) {
@@ -28,12 +39,108 @@ public class ReportServiceImpl implements ReportService {
                 try {
                     reportContent = objectMapper.readValue(contentJson, ResponseReportContentDTO.class);
                 } catch (IOException e) {
-                    throw new RuntimeException("Failed to parse response from database");
+                    throw new RuntimeException("Failed to parse response from database!");
                 }
             }
             report.setContent(reportContent);
         }
 
         return reportLists;
+    }
+
+    @Override
+    public void deleteReports(Integer userId, Integer reportId) {
+        boolean isFileDeleted = false;
+        ReportDTO report = reportMapper.getReportByReportId(reportId);
+
+        if (report == null) {
+            throw new RuntimeException("Delete failed! No such a report record in report id!" + reportId);
+        } else if (!Objects.equals(report.getUserId(), userId)) {
+            throw new RuntimeException("You are not allowed to delete other user's report!");
+        }
+
+        try {
+            String filePath = getFilePathFromUrl(report.getVideoUrl());
+
+            if (filePath != null) {
+                File file = new File(filePath);
+                isFileDeleted = file.delete();
+            }
+
+            // Delete key frames
+            // Generate file names of key frames
+            ObjectMapper objectMapper = new ObjectMapper();
+            ResponseReportContentDTO reportContent;
+            String contentJson = reportMapper.getContent(reportId);
+            if (contentJson != null) {
+                try {
+                    reportContent = objectMapper.readValue(contentJson, ResponseReportContentDTO.class);
+                } catch (IOException e) {
+                    throw new RuntimeException("Failed to parse response from database!");
+                }
+
+                List<String> keyFrames = reportContent.getRepresentativeImages();
+                String filename = keyFramesDir + keyFrames.get(0).replace("\\", "/")
+                            .replace("./", "/");
+                Path path = Paths.get(filename);
+                File toDelete = new File(path.getParent().toString());
+
+                File[] allContents = toDelete.listFiles();
+                if (allContents != null) {
+                    for (File file : allContents) {
+                        if (!file.delete()) {
+                            throw new RuntimeException("Error in deleting this file: " + file);
+                        }
+                    }
+                }
+                if (!toDelete.delete()) {
+                    throw new RuntimeException("Error in deleting this file: " + toDelete);
+                }
+
+                // Delete reports txt file
+//                File toDeleteTxt = new File(path
+//                        .getParent().toString()
+//                        .replace("/extracted_frames/frames_", "/reports/report_"));
+//                System.out.println("report: " + toDeleteTxt);
+//                if (!toDeleteTxt.delete()) {
+//                    throw new RuntimeException("Error in deleting this file: " + toDeleteTxt);
+//                }
+            }
+
+            if (isFileDeleted) {
+                reportMapper.deleteReport(reportId, userId);
+            } else {
+                throw new RuntimeException("Error to delete files from the file!");
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e.getMessage());
+        }
+    }
+
+
+    public String getFilePathFromUrl(String fileUrl) {
+        // Extract the relative path portion from a URL
+        String fileName = fileUrl.substring(fileUrl.lastIndexOf("/uploads/") + "/uploads/".length());
+
+        // Concatenate the file storage root directory and file name to get the full path of the file on the server
+        return Paths.get(videoUploadDir, fileName).toString();
+    }
+
+    private static String modifyFilePath(String originalFilePath) {
+        String targetSubstring = "extracted_frames/frames_";
+        String replacementSubstring = "reports_";
+
+        if (originalFilePath.contains(targetSubstring)) {
+            int startIndex = originalFilePath.indexOf(targetSubstring) + targetSubstring.length();
+
+            String uniqueIdentifier = originalFilePath.substring(startIndex, originalFilePath.indexOf('/', startIndex));
+
+            return originalFilePath.replace(
+                    targetSubstring + uniqueIdentifier,
+                    replacementSubstring + uniqueIdentifier
+            );
+        } else {
+            return originalFilePath;
+        }
     }
 }

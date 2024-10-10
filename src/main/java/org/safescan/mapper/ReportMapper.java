@@ -10,4 +10,8 @@ public interface ReportMapper {
     List<ReportDTO> getReports(Integer userId);
 
     String getContent(Integer reportId);
+
+    ReportDTO getReportByReportId(Integer reportId);
+
+    void deleteReport(Integer reportId, Integer userId);
 }

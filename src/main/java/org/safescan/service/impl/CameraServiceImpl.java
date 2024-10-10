@@ -42,13 +42,8 @@ public class CameraServiceImpl implements CameraService {
         try {
             Response response = client.newCall(request).execute();
             if (response.isSuccessful()) {
-                // System.out.println("Y");
-                // return response.body().string();
-                String responseBody = response.body() != null ? response.body().string() : null;
-                System.out.println("Python service response: " + responseBody);
-                return responseBody;
+                return response.body() != null ? response.body().string() : null;
             } else {
-                System.out.println("Failed to call Python service");
                 throw new RuntimeException("Error in calling Python service: " + response.message());
             }
         } catch (IOException e) {
