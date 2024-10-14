@@ -53,7 +53,7 @@ public class ReportController {
     }
 
 
-    @PostMapping("/update")
+    @PutMapping("/update")
     public Result<ReportDTO> updateReports(@RequestBody @Validated(ReportDTO.Update.class) ReportDTO report) {
         Map<String, Object> map = ThreadLocalUtil.get();
         int userId = (Integer) map.get("userId");
