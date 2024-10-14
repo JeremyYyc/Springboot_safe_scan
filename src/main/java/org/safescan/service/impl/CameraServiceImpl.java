@@ -1,5 +1,6 @@
 package org.safescan.service.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import okhttp3.*;
 import org.safescan.DTO.ReportDTO;
@@ -23,6 +24,14 @@ public class CameraServiceImpl implements CameraService {
     private CameraMapper cameraMapper;
 
     public String callPythonService(String videoFilePath, ReportDTO report){
+        ObjectMapper objectMapper = new ObjectMapper();
+        String attributesJson;
+        try {
+            attributesJson = objectMapper.writeValueAsString(report.getAttributes());
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Failed to generate Json Object!" + e.getMessage());
+        }
+
         OkHttpClient client = new OkHttpClient.Builder()
                 .connectTimeout(5, TimeUnit.MINUTES)
                 .readTimeout(5, TimeUnit.MINUTES)
@@ -32,6 +41,7 @@ public class CameraServiceImpl implements CameraService {
 
         RequestBody formBody = new FormBody.Builder()
                 .add("video_path", videoFilePath)
+                .add("attributes", attributesJson)
                 .build();
 
         Request request = new Request.Builder()

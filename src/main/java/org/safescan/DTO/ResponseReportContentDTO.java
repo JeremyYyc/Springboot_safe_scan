@@ -11,7 +11,7 @@ public class ResponseReportContentDTO {
 
     @Data
     public static class RegionInfo {
-        private List<String> childSafetyHazards;
+        private List<String> specialHazards;
         private List<String> colorAndLightingEvaluation;
         private List<String> potentialHazards;
         private List<String> regionName;

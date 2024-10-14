@@ -4,7 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.safescan.mapper.ReportMapper">
     <select id="getReports" resultType="org.safescan.DTO.ReportDTO">
-        select report_id, user_id, latitude, longitude, address_name, video_url, create_time, update_time
+        select report_id, user_id, report_name, latitude, longitude, address_name, video_url, create_time, update_time
         from reports
         where user_id = #{userId}
         order by create_time desc
@@ -17,7 +17,7 @@
     </select>
 
     <select id="getReportByReportId" resultType="org.safescan.DTO.ReportDTO">
-        select report_id, user_id, latitude, longitude, address_name, video_url, create_time, update_time
+        select report_id, user_id, report_name, latitude, longitude, address_name, video_url, create_time, update_time
         from reports
         where report_id = #{reportId}
     </select>
@@ -26,4 +26,10 @@
         delete from reports
         where report_id = #{reportId} and user_id = #{userId}
     </delete>
+
+    <update id="updateByReportId">
+        update reports
+        set report_name = #{reportName}, address_name = #{addressName}, update_time = #{updateTime}
+        where report_id = #{reportId}
+    </update>
 </mapper>

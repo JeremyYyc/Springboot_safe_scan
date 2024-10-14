@@ -8,4 +8,6 @@ public interface ReportService {
     List<ReportDTO> getReports(Integer userId);
 
     void deleteReports(Integer userId, Integer reportId);
+
+    ReportDTO updateReports(Integer userId, Integer reportId, String reportName, String addressName);
 }

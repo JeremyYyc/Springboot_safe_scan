@@ -13,6 +13,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
@@ -39,7 +40,7 @@ public class ReportServiceImpl implements ReportService {
                 try {
                     reportContent = objectMapper.readValue(contentJson, ResponseReportContentDTO.class);
                 } catch (IOException e) {
-                    throw new RuntimeException("Failed to parse response from database!");
+                    continue;
                 }
             }
             report.setContent(reportContent);
@@ -110,6 +111,32 @@ public class ReportServiceImpl implements ReportService {
         }
     }
 
+    @Override
+    public ReportDTO updateReports(Integer userId, Integer reportId, String reportName, String addressName) {
+        ReportDTO report = reportMapper.getReportByReportId(reportId);
+        if (!Objects.equals(userId, report.getUserId())) {
+            throw new RuntimeException("You are not allow to change other users' report!");
+        } else if (Objects.equals(reportName, report.getReportName())
+                && Objects.equals(addressName, report.getAddressName())) {
+            throw new RuntimeException("Please make changes first!");
+        }
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        ResponseReportContentDTO reportContent = null;
+        String contentJson = reportMapper.getContent(report.getReportId());
+        if (contentJson != null) {
+            try {
+                reportContent = objectMapper.readValue(contentJson, ResponseReportContentDTO.class);
+            } catch (IOException e) {
+                throw new RuntimeException("Failed to parse response from database!");
+            }
+        }
+        reportMapper.updateByReportId(reportId, reportName, addressName, LocalDateTime.now());
+        ReportDTO updatedReport = reportMapper.getReportByReportId(reportId);
+        updatedReport.setContent(reportContent);
+        return updatedReport;
+    }
+
 
     public String getFilePathFromUrl(String fileUrl) {
         // Extract the relative path portion from a URL
@@ -117,23 +144,5 @@ public class ReportServiceImpl implements ReportService {
 
         // Concatenate the file storage root directory and file name to get the full path of the file on the server
         return Paths.get(videoUploadDir, fileName).toString();
-    }
-
-    private static String modifyFilePath(String originalFilePath) {
-        String targetSubstring = "extracted_frames/frames_";
-        String replacementSubstring = "reports_";
-
-        if (originalFilePath.contains(targetSubstring)) {
-            int startIndex = originalFilePath.indexOf(targetSubstring) + targetSubstring.length();
-
-            String uniqueIdentifier = originalFilePath.substring(startIndex, originalFilePath.indexOf('/', startIndex));
-
-            return originalFilePath.replace(
-                    targetSubstring + uniqueIdentifier,
-                    replacementSubstring + uniqueIdentifier
-            );
-        } else {
-            return originalFilePath;
-        }
     }
 }

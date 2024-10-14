@@ -1,5 +1,6 @@
 package org.safescan.controller;
 
+import jakarta.validation.constraints.NotNull;
 import org.safescan.DTO.ReportDTO;
 import org.safescan.DTO.Result;
 import org.safescan.service.CameraService;
@@ -49,5 +50,20 @@ public class ReportController {
 
         reportService.deleteReports(userId, reportId);
         return Result.success("Successfully delete this report!", null);
+    }
+
+
+    @PostMapping("/update")
+    public Result<ReportDTO> updateReports(@RequestBody @Validated(ReportDTO.Update.class) ReportDTO report) {
+        Map<String, Object> map = ThreadLocalUtil.get();
+        int userId = (Integer) map.get("userId");
+
+        ReportDTO updatedReport = reportService.updateReports(
+                userId,
+                report.getReportId(),
+                report.getReportName(),
+                report.getAddressName()
+        );
+        return Result.success("Successfully update this report!", updatedReport);
     }
 }
