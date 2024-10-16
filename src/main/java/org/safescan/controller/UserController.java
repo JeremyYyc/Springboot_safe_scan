@@ -92,6 +92,7 @@ public class UserController {
         Map<String,Object> map = ThreadLocalUtil.get();
         int userId = (Integer) map.get("userId");
         UserDTO user = userService.findByUserId(userId);
+        user.setPassword("************"); // Protect user's password
         return Result.success(user);
     }
 

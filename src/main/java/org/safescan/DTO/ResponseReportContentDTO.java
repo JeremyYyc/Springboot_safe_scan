@@ -17,5 +17,7 @@ public class ResponseReportContentDTO {
         private List<String> regionName;
         private List<Double> scores;
         private List<String> suggestions;
+
+        private List<String> warning;
     }
 }

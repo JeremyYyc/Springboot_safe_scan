@@ -11,6 +11,7 @@ import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
+import java.time.LocalDateTime;
 import java.util.Map;
 
 @Component
@@ -18,6 +19,8 @@ public class LoginInterceptor implements HandlerInterceptor {
 
     @Autowired
     private StringRedisTemplate stringRedisTemplate;
+    private final String separator = "--------------------------------------------------------------------------------";
+    private final String newLine = "\n";
 
     /**
      * @param request Request from front-end
@@ -41,7 +44,7 @@ public class LoginInterceptor implements HandlerInterceptor {
             String redisToken = operations.get(token);
 
             // Estimate weather these two tokens are equal, which means there is a same token in redis
-            if (redisToken == null){
+            if (redisToken == null) {
                 throw new RuntimeException("Token is " + token);
             }
 
@@ -54,7 +57,14 @@ public class LoginInterceptor implements HandlerInterceptor {
         } catch (Exception e) {
             // Set http responsive code as 401
             response.setStatus(401);
-            System.err.println(e.getMessage());
+
+            // Log error information
+            System.err.println(separator + "FAILED-CALL-START" + separator + newLine
+                    + LocalDateTime.now() + newLine
+                    + "Failed Call Occurred ON API: " + request.getRequestURL() + newLine
+                    + e.getMessage() + newLine
+                    + separator + "-" + "FAILED-CALL-END" + "-" + separator
+            );
             // Do not give pass permission
             return false;
         }
@@ -65,6 +75,18 @@ public class LoginInterceptor implements HandlerInterceptor {
                                 HttpServletResponse response,
                                 Object handler,
                                 Exception ex) throws Exception {
+        Map<String, Object> map = ThreadLocalUtil.get();
+        String message = "No token api!";
+        if (map != null) {
+            message = "User id: " + map.get("userId");
+        }
+        System.out.println(separator + "SUCCESSFUL--START" + separator + newLine
+                + LocalDateTime.now() + ": \n"
+                + "Successfully Execute on API: " + request.getRequestURL() + newLine
+                + message + newLine
+                + separator + "-" + "SUCCESSFUL--END" + "-" + separator
+        );
+
         // Clear data in TreadLocal to prevent memory leaks
         ThreadLocalUtil.remove();
     }
