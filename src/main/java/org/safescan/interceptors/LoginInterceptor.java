@@ -60,7 +60,7 @@ public class LoginInterceptor implements HandlerInterceptor {
 
             // Log error information
             System.err.println(separator + "FAILED-CALL-START" + separator + newLine
-                    + LocalDateTime.now() + newLine
+                    + LocalDateTime.now() + ":  "
                     + "Failed Call Occurred ON API: " + request.getRequestURL() + newLine
                     + e.getMessage() + newLine
                     + separator + "-" + "FAILED-CALL-END" + "-" + separator
@@ -81,7 +81,7 @@ public class LoginInterceptor implements HandlerInterceptor {
             message = "User id: " + map.get("userId");
         }
         System.out.println(separator + "SUCCESSFUL--START" + separator + newLine
-                + LocalDateTime.now() + ": \n"
+                + LocalDateTime.now() + ":  "
                 + "Successfully Execute on API: " + request.getRequestURL() + newLine
                 + message + newLine
                 + separator + "-" + "SUCCESSFUL--END" + "-" + separator

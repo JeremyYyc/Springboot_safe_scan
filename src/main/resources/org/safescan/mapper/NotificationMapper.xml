@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.safescan.mapper.NotificationMapper">
+    <select id="getLatestNotification" resultType="org.safescan.DTO.ResponseNotificationDTO">
+        (
+            select
+                'like' as state,
+                fl.forum_id as forumId,
+                fl.comment_id as commentId,
+                null as ancestorCommentId,
+                null as fromCommentId,
+                null as content,
+                u.user_id as fromUserId,
+                u.avatar as fromUserAvatar,
+                u.username as fromUsername,
+                f.user_id as userId,
+                fl.read_state as readState,
+                fl.create_time as createTime
+            from forum_likes fl
+                     left join forums f on fl.forum_id = f.forum_id
+                     left join forum_comments fc on fl.comment_id = fc.comment_id
+                     left join users u on fl.user_id = u.user_id
+            where (f.user_id = #{userId} or fc.user_id = #{userId})
+            order by fl.create_time desc
+        )
+        union all
+        (
+            select
+                'comment' as state,
+                fc.forum_id as forumId,
+                fc.comment_id as commentId,
+                fc.ancestor_comment_id as ancestorCommentId,
+                fc.comment_id as fromCommentId,
+                fc.content as content,
+                u.user_id as fromUserId,
+                u.avatar as fromUserAvatar,
+                u.username as fromUsername,
+                f.user_id as userId,
+                fc.read_state as readState,
+                fc.create_time as createTime
+            from forum_comments fc
+                     left join forums f on fc.forum_id = f.forum_id
+                     left join users u on fc.user_id = u.user_id
+            where (f.user_id = #{userId} or fc.parent_comment_id in
+                                    (select comment_id from forum_comments where user_id = #{userId}))
+              and fc.state = 'Readable'
+            order by fc.create_time desc
+        )
+        order by createTime desc
+    </select>
+
+    <update id="readNotification">
+        <choose>
+            <!-- Update the read status of likes -->
+            <when test="state == 'like'">
+                update forum_likes
+                set read_state = 'Read'
+                where (forum_id in (select forum_id from forums where user_id = #{userId})
+                or comment_id in (select comment_id from forum_comments where user_id = #{userId}))
+                and read_state = 'UnRead'
+            </when>
+
+            <!-- Update the read status of a comment -->
+            <when test="state == 'comment'">
+                update forum_comments
+                set read_state = 'Read'
+                where forum_id in (
+                select forum_id from (
+                select forum_id
+                from forums
+                where user_id = #{userId}
+                ) as temp_forum
+                )
+                or parent_comment_id in (
+                select parent_comment_id from (
+                select comment_id as parent_comment_id
+                from forum_comments
+                where user_id = #{userId}
+                ) as temp_comment
+                )
+                and read_state = 'UnRead'
+                and state = 'Readable'
+            </when>
+        </choose>
+    </update>
+
+    <select id="getLatestChat">
+        select question
+        from chat_bot
+        where user_id = #{userId}
+          and ABS(TIMESTAMPDIFF(minute, create_time, NOW())) &lt; 1
+        order by create_time asc
+    </select>
+
+    <insert id="addNewChat" parameterType="org.safescan.DTO.ChatDTO" useGeneratedKeys="true" keyProperty="chatId">
+        insert into chat_bot(user_id, question, reply, create_time)
+        values (#{userId}, #{question}, #{reply}, #{createTime})
+    </insert>
+
+</mapper>
