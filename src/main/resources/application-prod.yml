@@ -1,11 +1,11 @@
 spring:
   datasource:
-    url: jdbc:mysql://34.87.236.86:3306/safe_scan?useSSL=false
-    username: root-safe-scan
+    url: jdbc:mysql://35.189.30.89:3306/safe_scan?useSSL=false
+    username: root
     password: 123456
   data:
     redis:
-      host: 10.128.187.163
+      host: 10.55.177.219
       port: 6379
 
 app:

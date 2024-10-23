@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 public interface UserMapper {
     UserDTO findByEmail(String email);
 
-    void registerByEmail(String email, String encryptedPassword);
+    void registerByEmail(String email, String encryptedPassword, LocalDateTime time);
 
     void update(UserDTO user);
 

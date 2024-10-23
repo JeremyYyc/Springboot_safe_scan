@@ -26,7 +26,7 @@ public class UserServiceImpl implements UserService {
         String encryptedPassword = Md5Util.hash(password);
 
         // Finish the register
-        userMapper.registerByEmail(email, encryptedPassword);
+        userMapper.registerByEmail(email, encryptedPassword, LocalDateTime.now());
     }
 
     @Override

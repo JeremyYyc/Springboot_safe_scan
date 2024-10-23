@@ -11,7 +11,7 @@
 
     <insert id="registerByEmail">
         insert into users(email, password, create_time, update_time)
-        values(#{email}, #{encryptedPassword}, now(), now());
+        values(#{email}, #{encryptedPassword}, #{time}, #{time});
     </insert>
 
     <update id="update" parameterType="org.safescan.DTO.UserDTO">
